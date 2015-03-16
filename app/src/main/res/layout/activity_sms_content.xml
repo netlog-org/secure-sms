@@ -51,6 +51,9 @@
 
         <EditText
             android:id="@+id/text"
+            android:textColor="@color/gg_grey800"
+            android:textColorHighlight="@color/gg_grey500"
+            android:textSize="16sp"
             android:layout_toLeftOf="@+id/button"
             android:layout_toStartOf="@+id/button"
             android:hint="@string/type_message_hint"
@@ -73,7 +76,7 @@
             android:layout_height="wrap_content" />
 
         <View
-            android:background="@color/gg_grey500"
+            android:background="@color/gg_grey400"
             android:layout_width="match_parent"
             android:layout_height="1dp" />
 
