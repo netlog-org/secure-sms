@@ -156,7 +156,7 @@ public class SmsContentActivity extends ActionBarActivity {
                     smsObject.Date = DateFormat.getInstance().format(date);
                     smsObject.Content = c.getString(c.getColumnIndex("body"));
                     results.add(smsObject);
-                } catch (NumberFormatException ex) { continue; }
+                } catch (NumberFormatException ignored) { }
             } while (c.moveToNext());
         }
         c.close();
