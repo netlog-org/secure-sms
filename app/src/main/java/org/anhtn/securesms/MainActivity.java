@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract.PhoneLookup;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -47,7 +48,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(MainActivity.this, SmsContentActivity.class);
-                i.putExtra("address", mAdapter.getItem(position).From);
+                final SmsObject smsObject = mAdapter.getItem(position);
+                i.putExtra("address", smsObject.From);
+                i.putExtra("addressInContact", smsObject.FromDisplayName);
                 startActivity(i);
             }
         });
@@ -105,11 +108,16 @@ public class MainActivity extends ActionBarActivity {
                 if (address.startsWith("+84")) {
                     address = address.replace("+84", "0");
                 }
+
                 final boolean ok = addressSet.add(address);
                 if (ok) {
                     SmsObject smsObject = new SmsObject();
                     smsObject.From = address;
                     smsObject.Content = c.getString(c.getColumnIndex("body"));
+                    try {
+                        String phoneNumber = String.valueOf(Long.parseLong(address));
+                        smsObject.FromDisplayName = phoneLookup(phoneNumber);
+                    } catch (NumberFormatException ignored) {}
                     results.add(smsObject);
                 }
             } while (c.moveToNext());
@@ -128,9 +136,23 @@ public class MainActivity extends ActionBarActivity {
         });
     }
 
+    private String phoneLookup(String phoneNumber) {
+        Uri uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
+                Uri.encode(phoneNumber));
+        Cursor c = getContentResolver().query(uri, new String[]{PhoneLookup.DISPLAY_NAME},
+                null, null, null);
+        if (c.moveToFirst()) {
+            final String result = c.getString(c.getColumnIndex(PhoneLookup.DISPLAY_NAME));
+            c.close();
+            return result;
+        }
+        return null;
+    }
+
 
     private static class SmsObject {
         public String From;
+        public String FromDisplayName;
         public String Content;
     }
 
@@ -153,7 +175,11 @@ public class MainActivity extends ActionBarActivity {
             final TextView textFrom = (TextView) view.findViewById(R.id.text_sms_from);
             final TextView textContent = (TextView) view.findViewById(R.id.text_sms_content);
 
-            textFrom.setText(smsObject.From);
+            if (smsObject.FromDisplayName != null) {
+                textFrom.setText(smsObject.FromDisplayName);
+            } else {
+                textFrom.setText(smsObject.From);
+            }
             textContent.setText(smsObject.Content);
 
             return view;
