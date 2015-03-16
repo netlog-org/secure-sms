@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -121,7 +120,7 @@ public class SmsContentActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setListViewToBottom() {
+    private void scrollListViewToBottom() {
         listView.setSelection(mAdapter.getCount() - 1);
     }
 
@@ -168,7 +167,7 @@ public class SmsContentActivity extends ActionBarActivity {
                 }
                 pb.setVisibility(View.GONE);
                 listView.setVisibility(View.VISIBLE);
-                setListViewToBottom();
+                scrollListViewToBottom();
             }
         });
     }
@@ -200,7 +199,7 @@ public class SmsContentActivity extends ActionBarActivity {
             smsObject.Date = (getResultCode() == RESULT_OK) ? sOk : sFail;
 
             mAdapter.add(smsObject);
-            setListViewToBottom();
+            scrollListViewToBottom();
         }
     };
 
