@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
@@ -151,10 +151,12 @@ public class SmsContentActivity extends ActionBarActivity {
                     Log.e("SecureSMS", "Ignore sms type: " + smsObject.Type);
                     continue;
                 }
-                Date date = new Date(Long.parseLong(c.getString(c.getColumnIndex("date"))));
-                smsObject.Date = DateFormat.getInstance().format(date);
-                smsObject.Content = c.getString(c.getColumnIndex("body"));
-                results.add(smsObject);
+                try {
+                    Date date = new Date(Long.parseLong(c.getString(c.getColumnIndex("date"))));
+                    smsObject.Date = DateFormat.getInstance().format(date);
+                    smsObject.Content = c.getString(c.getColumnIndex("body"));
+                    results.add(smsObject);
+                } catch (NumberFormatException ex) { continue; }
             } while (c.moveToNext());
         }
         c.close();
@@ -190,6 +192,8 @@ public class SmsContentActivity extends ActionBarActivity {
     private BroadcastReceiver mSmsSentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (mCurrentMsgToSent == null) return;
+
             SmsObject smsObject = new SmsObject();
             smsObject.Content = mCurrentMsgToSent;
             smsObject.Type = SmsObject.TYPE_SENT;
@@ -200,6 +204,7 @@ public class SmsContentActivity extends ActionBarActivity {
 
             mAdapter.add(smsObject);
             scrollListViewToBottom();
+            mCurrentMsgToSent = null;
         }
     };
 
