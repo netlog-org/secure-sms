@@ -1,11 +1,18 @@
 package org.anhtn.securesms;
 
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.telephony.PhoneNumberUtils;
+import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,9 +34,13 @@ import java.util.List;
 
 public class SmsContentActivity extends ActionBarActivity {
 
+    private static final String SMS_SENT = "org.anhtn.securesms.SMS_SENT";
+
     private SmsListAdapter mAdapter;
     private ProgressBar pb;
     private ListView listView;
+    private TextView txtNewSms;
+    private String mAddress, mCurrentMsgToSent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +51,25 @@ public class SmsContentActivity extends ActionBarActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        final String address = getIntent().getStringExtra("address");
-        getSupportActionBar().setTitle(address);
+        mAddress = getIntent().getStringExtra("address");
+        String addressInContact = getIntent().getStringExtra("addressInContact");
+        if (addressInContact == null) {
+            addressInContact = mAddress;
+        }
+        getSupportActionBar().setTitle(addressInContact);
 
         pb = (ProgressBar) findViewById(R.id.progress);
+        txtNewSms = (TextView) findViewById(R.id.text);
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCurrentMsgToSent = txtNewSms.getText().toString();
+                if (mCurrentMsgToSent.length() > 0) {
+                    txtNewSms.setText("");
+                    sendSms(mCurrentMsgToSent);
+                }
+            }
+        });
 
         mAdapter = new SmsListAdapter(this, R.layout.view_list_sms_item_1);
         listView = (ListView) findViewById(R.id.list);
@@ -53,6 +79,7 @@ public class SmsContentActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(mSmsSentReceiver, new IntentFilter(SMS_SENT));
 
         pb.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
@@ -64,6 +91,12 @@ public class SmsContentActivity extends ActionBarActivity {
                 loadData();
             }
         }).start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(mSmsSentReceiver);
     }
 
     @Override
@@ -88,12 +121,16 @@ public class SmsContentActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void setListViewToBottom() {
+        listView.setSelection(mAdapter.getCount() - 1);
+    }
+
     private void loadData() {
         Uri inboxUri = Uri.parse("content://sms/");
         String[] reqCols = new String[] {"body", "date", "type"};
         final List<SmsObject> results = new ArrayList<>();
 
-        CharSequence address = getSupportActionBar().getTitle();
+        CharSequence address = mAddress;
         if (address == null) return;
         String selection;
         try {
@@ -131,10 +168,41 @@ public class SmsContentActivity extends ActionBarActivity {
                 }
                 pb.setVisibility(View.GONE);
                 listView.setVisibility(View.VISIBLE);
-                listView.setSelection(mAdapter.getCount() - 1);
+                setListViewToBottom();
             }
         });
     }
+
+    private void sendSms(String msg) {
+        try {
+            if (!PhoneNumberUtils.isWellFormedSmsAddress(mAddress)) {
+                throw new RuntimeException("Not have well formed sms address");
+            }
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(SMS_SENT), 0);
+            SmsManager sms = SmsManager.getDefault();
+            sms.sendTextMessage(mAddress, null, msg, pi, null);
+            sendBroadcast(new Intent(SMS_SENT));
+        } catch (Exception ex) {
+            Log.e("SecureSMS", "Failed to send sms: " + ex.getMessage());
+        }
+    }
+
+
+    private BroadcastReceiver mSmsSentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            SmsObject smsObject = new SmsObject();
+            smsObject.Content = mCurrentMsgToSent;
+            smsObject.Type = SmsObject.TYPE_SENT;
+
+            String sOk = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
+            String sFail = "Send message failed";
+            smsObject.Date = (getResultCode() == RESULT_OK) ? sOk : sFail;
+
+            mAdapter.add(smsObject);
+            setListViewToBottom();
+        }
+    };
 
 
     private static class SmsObject {
