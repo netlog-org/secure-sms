@@ -13,9 +13,10 @@
 .idea/gradle.xml
 .idea/
 
+# gedit backup files
 *~
+
 *.iml
-*.psd
 gradle.properties
 
 # OS-specific files
