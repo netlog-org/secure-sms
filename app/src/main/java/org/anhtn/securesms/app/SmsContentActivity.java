@@ -1,4 +1,4 @@
-package org.anhtn.securesms;
+package org.anhtn.securesms.app;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -24,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import org.anhtn.securesms.R;
 
 import java.text.DateFormat;
 import java.util.ArrayList;

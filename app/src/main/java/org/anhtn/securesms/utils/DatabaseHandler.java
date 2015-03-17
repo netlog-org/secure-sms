@@ -1,4 +1,4 @@
-package org.anhtn.securesms;
+package org.anhtn.securesms.utils;
 
 import android.content.ContentValues;
 import android.content.Context;

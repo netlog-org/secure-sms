@@ -1,4 +1,4 @@
-package org.anhtn.securesms;
+package org.anhtn.securesms.app;
 
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +18,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import org.anhtn.securesms.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
