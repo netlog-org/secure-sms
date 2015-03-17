@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +31,7 @@ public class MainActivity extends ActionBarActivity {
     private SmsListAdapter mAdapter;
     private ProgressBar pb;
     private ListView listView;
+    private HashMap<String, String> mContactData = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +118,12 @@ public class MainActivity extends ActionBarActivity {
                     smsObject.Content = c.getString(c.getColumnIndex("body"));
                     try {
                         String phoneNumber = String.valueOf(Long.parseLong(address));
-                        smsObject.FromDisplayName = phoneLookup(phoneNumber);
+                        if (mContactData.containsKey(phoneNumber)) {
+                            smsObject.FromDisplayName = mContactData.get(phoneNumber);
+                        } else {
+                            smsObject.FromDisplayName = phoneLookup(phoneNumber);
+                            mContactData.put(phoneNumber, smsObject.FromDisplayName);
+                        }
                     } catch (NumberFormatException ignored) {}
                     results.add(smsObject);
                 }
