@@ -4,6 +4,8 @@ import android.util.Log;
 
 public class Global {
 
+    public static final String DEFAULT_PASSWORD = "securesms";
+
     public static void log(Object obj) {
         log("SecureSMS-debug", obj);
     }

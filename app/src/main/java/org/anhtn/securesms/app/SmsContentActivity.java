@@ -12,7 +12,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -79,9 +78,8 @@ public class SmsContentActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        registerReceiver(mSmsSentReceiver, new IntentFilter(SMS_SENT));
+    protected void onStart() {
+        super.onStart();
 
         pb.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
@@ -96,9 +94,16 @@ public class SmsContentActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(mSmsSentReceiver, new IntentFilter(SMS_SENT));
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mSmsSentReceiver);
+        MainActivity.sLeaveFromChild = true;
     }
 
     @Override

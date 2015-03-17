@@ -1,6 +1,9 @@
 package org.anhtn.securesms.app;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -15,11 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.utils.Global;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +34,8 @@ import java.util.Set;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    public static boolean sLeaveFromChild = false;
 
     private SmsListAdapter mAdapter;
     private ProgressBar pb;
@@ -62,8 +69,11 @@ public class MainActivity extends ActionBarActivity {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
+        if (!sLeaveFromChild) {
+            showInputPasswordDialog();
+        } else sLeaveFromChild = false;
 
         pb.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
@@ -97,6 +107,26 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressLint("InflateParams")
+    private void showInputPasswordDialog() {
+        View container = getLayoutInflater().inflate(R.layout.view_dialog_password, null);
+        final EditText input = (EditText) container.findViewById(android.R.id.edit);
+        input.setBackgroundResource(android.R.color.transparent);
+        new AlertDialog.Builder(this)
+                .setMessage("Input password to continue")
+                .setView(container)
+                .setCancelable(false)
+                .setInverseBackgroundForced(true)
+                .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (!Global.DEFAULT_PASSWORD.equals(input.getText().toString())) {
+                            showInputPasswordDialog();
+                        }
+                    }
+                }).show();
     }
 
     private void loadData() {
