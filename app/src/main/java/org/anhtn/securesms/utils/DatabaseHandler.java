@@ -45,7 +45,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 return cursor.getString(cursor.getColumnIndex("password"));
             }
 		} catch (SQLiteException ex) {
-			Log.e(TAG, ex.getMessage());
+            Global.error(TAG, ex);
 		} finally {
 			if (db != null) {
 				db.close();
@@ -67,7 +67,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             return db.update(TABLE_NAME, content, "phone = ?",
                     new String[] {phoneNumber}) != -1;
         } catch (SQLiteException ex) {
-            Log.e(TAG, ex.getMessage());
+            Global.error(TAG, ex);
         } finally {
             if (db != null) {
                 db.close();
@@ -89,7 +89,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			content.put("password", password);
 			return db.insert(TABLE_NAME, null, content) != -1;
 		} catch (SQLiteException ex) {
-			Log.e(TAG, ex.getMessage());
+            Global.error(TAG, ex);
 		} finally {
 			if (db != null) {
 				db.close();

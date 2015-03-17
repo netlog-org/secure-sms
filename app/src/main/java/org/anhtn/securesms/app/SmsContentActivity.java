@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.utils.Global;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -150,7 +151,7 @@ public class SmsContentActivity extends ActionBarActivity {
                 if (smsObject.Type != SmsObject.TYPE_INBOX
                         && smsObject.Type != SmsObject.TYPE_SENT) {
 
-                    Log.e("SecureSMS", "Ignore sms type: " + smsObject.Type);
+                    Global.log("Ignore sms type: " + smsObject.Type);
                     continue;
                 }
                 try {
@@ -186,7 +187,7 @@ public class SmsContentActivity extends ActionBarActivity {
             sms.sendTextMessage(mAddress, null, msg, pi, null);
             sendBroadcast(new Intent(SMS_SENT));
         } catch (Exception ex) {
-            Log.e("SecureSMS", "Failed to send sms: " + ex.getMessage());
+            Global.error("Failed to send sms: " + ex.getMessage());
         }
     }
 

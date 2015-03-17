@@ -5,10 +5,18 @@ import android.util.Log;
 public class Global {
 
     public static void log(Object obj) {
-        Log.i("SecureSMS", obj.toString());
+        log("SecureSMS-debug", obj);
+    }
+
+    public static void log(String tag, Object obj) {
+        Log.i(tag, obj.toString());
     }
 
     public static void error(Object obj) {
-        Log.e("SecureSMS", obj.toString());
+        error("SecureSMS-error", obj);
+    }
+
+    public static void error(String tag, Object obj) {
+        Log.e(tag, obj.toString());
     }
 }
