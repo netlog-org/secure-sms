@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.utils.Global;
 
 import java.text.DateFormat;
@@ -67,7 +68,8 @@ public class SmsContentActivity extends ActionBarActivity {
                 mCurrentMsgToSent = txtNewSms.getText().toString();
                 if (mCurrentMsgToSent.length() > 0) {
                     txtNewSms.setText("");
-                    sendSms(mCurrentMsgToSent);
+                    sendSms(Global.ALGORITHM + AESHelper.encryptToBase64(
+                            Global.DEFAULT_PASSWORD, mCurrentMsgToSent));
                 }
             }
         });
@@ -162,7 +164,12 @@ public class SmsContentActivity extends ActionBarActivity {
                 try {
                     Date date = new Date(Long.parseLong(c.getString(c.getColumnIndex("date"))));
                     smsObject.Date = DateFormat.getInstance().format(date);
-                    smsObject.Content = c.getString(c.getColumnIndex("body"));
+                    String content = c.getString(c.getColumnIndex("body"));
+                    if (content.startsWith(Global.ALGORITHM)) {
+                        content = content.replace(Global.ALGORITHM, "");
+                        content = AESHelper.decryptFromBase64(Global.DEFAULT_PASSWORD, content);
+                    }
+                    smsObject.Content = content;
                     results.add(smsObject);
                 } catch (NumberFormatException ignored) { }
             } while (c.moveToNext());
