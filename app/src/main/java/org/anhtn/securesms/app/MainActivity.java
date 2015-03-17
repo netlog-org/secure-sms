@@ -71,9 +71,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        if (!sLeaveFromChild) {
-            showInputPasswordDialog();
-        } else sLeaveFromChild = false;
+//        if (!sLeaveFromChild) {
+//            showInputPasswordDialog();
+//        } else sLeaveFromChild = false;
 
         pb.setVisibility(View.VISIBLE);
         listView.setVisibility(View.GONE);
