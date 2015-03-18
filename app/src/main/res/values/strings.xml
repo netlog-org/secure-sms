@@ -19,4 +19,5 @@
     <string name="forward">Forward</string>
     <string name="message_options">Message options</string>
     <string name="recent_list">Recent list</string>
+    <string name="delete_message">Delete message</string>
 </resources>

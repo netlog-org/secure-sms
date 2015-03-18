@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Intents;
 import android.provider.ContactsContract.RawContacts;
+import android.provider.Telephony;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
@@ -197,60 +198,19 @@ public class SmsContentActivity extends ActionBarActivity {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case MENU_COPY_ID: {
-                if (mCurrentPosLongClick < 0) break;
-                String text = mAdapter.getItem(mCurrentPosLongClick).Content;
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
-                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
-                            getSystemService(Context.CLIPBOARD_SERVICE);
-                    clipboard.setText(text);
-                } else {
-                    ClipboardManager clipboard = (ClipboardManager)
-                            getSystemService(Context.CLIPBOARD_SERVICE);
-                    ClipData clip = ClipData.newPlainText("secure-sms-content", text);
-                    clipboard.setPrimaryClip(clip);
-                }
+            case MENU_COPY_ID:
+                copyToClipboard();
                 break;
-            }
 
-            case MENU_FORWARD_ID: {
-                final String[] items = new String[]{
-                        getResources().getString(R.string.action_add),
-                        getResources().getString(R.string.recent_list)
-                };
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                        android.R.layout.simple_list_item_1, items);
-                final List<SmsObject> list = (List<SmsObject>)
-                        CacheHelper.getInstance().get("sms");
-
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.action_add)
-                        .setCancelable(true)
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .setAdapter(adapter, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                if (which == 0) {
-                                    SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
-                                    Intent i = new Intent(SmsContentActivity.this,
-                                            ListContactActivity.class);
-                                    i.putExtra("content", sms.Content);
-                                    i.putExtra("address", list.get(which).Address);
-                                    startActivity(i);
-                                } else {
-                                    showChooseContactDialog();
-                                }
-                            }
-                        }).show();
+            case MENU_FORWARD_ID:
+                forwardMessage();
                 break;
-            }
 
-            case MENU_DELETE_ID: {
+            case MENU_DELETE_ID:
+                deleteMessage();
                 break;
-            }
 
             default:
                 return super.onContextItemSelected(item);
@@ -289,13 +249,83 @@ public class SmsContentActivity extends ActionBarActivity {
                 }).show();
     }
 
+    private void copyToClipboard() {
+        if (mCurrentPosLongClick < 0) return;
+        String text = mAdapter.getItem(mCurrentPosLongClick).Content;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                    getSystemService(Context.CLIPBOARD_SERVICE);
+            clipboard.setText(text);
+        } else {
+            ClipboardManager clipboard = (ClipboardManager)
+                    getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("secure-sms-content", text);
+            clipboard.setPrimaryClip(clip);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void forwardMessage() {
+        final String[] items = new String[]{
+                getResources().getString(R.string.action_add),
+                getResources().getString(R.string.recent_list)
+        };
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, items);
+        final List<SmsObject> list = (List<SmsObject>)
+                CacheHelper.getInstance().get("sms");
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.action_add)
+                .setCancelable(true)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (which == 0) {
+                            Intent i = new Intent(SmsContentActivity.this,
+                                    ListContactActivity.class);
+                            i.putExtra("content",
+                                    mAdapter.getItem(mCurrentPosLongClick).Content);
+                            i.putExtra("address", list.get(which).Address);
+                            startActivity(i);
+                        } else {
+                            showChooseContactDialog();
+                        }
+                    }
+                }).show();
+    }
+
+    private void deleteMessage() {
+        new AlertDialog.Builder(this)
+                .setMessage(R.string.delete_message)
+                .setCancelable(true)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+                        Uri uri = Uri.parse("content://sms/");
+                        int ret = getContentResolver().delete(uri, "_id= ?",
+                                new String[]{String.valueOf(sms.Id)});
+                        if (ret > 0) {
+                            deleteListViewItem(mCurrentPosLongClick);
+                        }
+                    }
+                }).show();
+    }
+
+    private void deleteListViewItem(int position) {
+        mAdapter.remove(mAdapter.getItem(position));
+    }
+
     private void scrollListViewToBottom() {
         listView.setSelection(mAdapter.getCount() - 1);
     }
 
     private void loadData() {
-        Uri inboxUri = Uri.parse("content://sms/");
-        String[] reqCols = new String[] {"body", "date", "type"};
+        Uri uri = Uri.parse("content://sms/");
+        String[] reqCols = new String[] {"_id", "body", "date", "type"};
         final List<SmsMessage> results = new ArrayList<>();
 
         CharSequence address = mAddress;
@@ -308,12 +338,13 @@ public class SmsContentActivity extends ActionBarActivity {
             selection = "address='" + address + "'";
         }
 
-        Cursor c = getContentResolver().query(inboxUri, reqCols, selection,
+        Cursor c = getContentResolver().query(uri, reqCols, selection,
                 null, "date ASC");
         if (c.moveToFirst()) {
             do {
                 SmsMessage sms = new SmsMessage();
                 sms.Type = c.getInt(c.getColumnIndex("type"));
+                sms.Id = c.getInt(c.getColumnIndex("_id"));
                 if (sms.Type != SmsMessage.TYPE_INBOX
                         && sms.Type != SmsMessage.TYPE_SENT) {
 
@@ -387,6 +418,7 @@ public class SmsContentActivity extends ActionBarActivity {
         public static final int TYPE_INBOX = 1;
         public static final int TYPE_SENT = 2;
 
+        public int Id;
         public int Type;
         public String Content;
         public String Date;

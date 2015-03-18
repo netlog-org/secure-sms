@@ -10,4 +10,5 @@
     <string name="forward">Chuyển tiếp</string>
     <string name="message_options">Tùy chọn tin nhắn</string>
     <string name="recent_list">Danh sách gần đây</string>
+    <string name="delete_message">Xóa tin nhắn</string>
 </resources>
