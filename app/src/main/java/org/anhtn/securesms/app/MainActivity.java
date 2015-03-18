@@ -182,19 +182,19 @@ public class MainActivity extends ActionBarActivity {
         Cursor c = getContentResolver().query(uri, new String[]{PhoneLookup.DISPLAY_NAME},
                 null, null, null);
         if (c.moveToFirst()) {
-            List<String> results = new ArrayList<>();
+            Set<String> results = new HashSet<>();
             do {
                 results.add(c.getString(c.getColumnIndex(PhoneLookup.DISPLAY_NAME)));
             } while (c.moveToNext());
             c.close();
 
             if (results.isEmpty()) return null;
-            else if (results.size() == 1) return results.get(0);
             else {
-                StringBuilder builder = new StringBuilder(results.get(0));
-                for (int i = 1; i < results.size(); i++) {
-                    builder.append(results.get(i));
-                    builder.append(", ");
+                StringBuilder builder = new StringBuilder();
+                int i = 0;
+                for (String s : results) {
+                    if (i++ > 0) builder.append(", ");
+                    builder.append(s);
                 }
                 return builder.toString();
             }
