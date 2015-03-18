@@ -63,8 +63,8 @@ public class MainActivity extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent i = new Intent(MainActivity.this, SmsContentActivity.class);
                 final SmsObject smsObject = mAdapter.getItem(position);
-                i.putExtra("address", smsObject.From);
-                i.putExtra("addressInContact", smsObject.FromDisplayName);
+                i.putExtra("address", smsObject.Address);
+                i.putExtra("addressInContact", smsObject.AddressInContact);
                 startActivity(i);
             }
         });
@@ -151,15 +151,15 @@ public class MainActivity extends ActionBarActivity {
                 final boolean ok = addressSet.add(address);
                 if (ok) {
                     SmsObject smsObject = new SmsObject();
-                    smsObject.From = address;
+                    smsObject.Address = address;
                     smsObject.Content = c.getString(c.getColumnIndex("body"));
                     try {
                         String phoneNumber = String.valueOf(Long.parseLong(address));
                         if (mContactData.containsKey(phoneNumber)) {
-                            smsObject.FromDisplayName = mContactData.get(phoneNumber);
+                            smsObject.AddressInContact = mContactData.get(phoneNumber);
                         } else {
-                            smsObject.FromDisplayName = phoneLookup(phoneNumber);
-                            mContactData.put(phoneNumber, smsObject.FromDisplayName);
+                            smsObject.AddressInContact = phoneLookup(phoneNumber);
+                            mContactData.put(phoneNumber, smsObject.AddressInContact);
                         }
                     } catch (NumberFormatException ignored) {}
                     results.add(smsObject);
@@ -178,6 +178,7 @@ public class MainActivity extends ActionBarActivity {
                 listView.setVisibility(View.VISIBLE);
             }
         });
+        mCache.put("sms", results);
     }
 
     private String phoneLookup(String phoneNumber) {
@@ -225,10 +226,10 @@ public class MainActivity extends ActionBarActivity {
             final TextView textFrom = (TextView) view.findViewById(android.R.id.text1);
             final TextView textContent = (TextView) view.findViewById(android.R.id.text2);
 
-            if (smsObject.FromDisplayName != null) {
-                textFrom.setText(smsObject.FromDisplayName);
+            if (smsObject.AddressInContact != null) {
+                textFrom.setText(smsObject.AddressInContact);
             } else {
-                textFrom.setText(smsObject.From);
+                textFrom.setText(smsObject.Address);
             }
             textContent.setText(smsObject.Content);
 
