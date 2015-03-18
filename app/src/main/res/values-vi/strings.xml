@@ -1,3 +1,7 @@
 <resources>
     <string name="type_message_hint">Nhập tin nhắn</string>
+    <string name="action_add">Tin nhắn mới</string>
+    <string name="action_settings">Cài đặt</string>
+    <string name="search_hint">Nhập tên hoặc số điện thoại</string>
+    <string name="choose_phone_number">Gửi tin nhắn tới %s qua</string>
 </resources>
