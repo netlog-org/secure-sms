@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Intents;
 import android.provider.ContactsContract.RawContacts;
-import android.provider.Telephony;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
@@ -34,6 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.crypto.AESHelper;
@@ -163,6 +163,17 @@ public class SmsContentActivity extends ActionBarActivity {
             return true;
         }
         else if (id == R.id.action_delete) {
+            new AlertDialog.Builder(this)
+                    .setMessage(getString(R.string.delete_all_messages,
+                            getSupportActionBar().getTitle()))
+                    .setCancelable(true)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            deleteAllMessageOfAddress();
+                        }
+                    }).show();
             return true;
         }
         else if (id == R.id.action_add_contact) {
@@ -209,7 +220,16 @@ public class SmsContentActivity extends ActionBarActivity {
                 break;
 
             case MENU_DELETE_ID:
-                deleteMessage();
+                new AlertDialog.Builder(this)
+                        .setMessage(R.string.delete_message)
+                        .setCancelable(true)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteMessage();
+                            }
+                        }).show();
                 break;
 
             default:
@@ -267,8 +287,8 @@ public class SmsContentActivity extends ActionBarActivity {
     @SuppressWarnings("unchecked")
     private void forwardMessage() {
         final String[] items = new String[]{
-                getResources().getString(R.string.action_add),
-                getResources().getString(R.string.recent_list)
+                getString(R.string.action_add),
+                getString(R.string.recent_list)
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, items);
@@ -297,22 +317,31 @@ public class SmsContentActivity extends ActionBarActivity {
     }
 
     private void deleteMessage() {
-        new AlertDialog.Builder(this)
-                .setMessage(R.string.delete_message)
-                .setCancelable(true)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
-                        Uri uri = Uri.parse("content://sms/");
-                        int ret = getContentResolver().delete(uri, "_id= ?",
-                                new String[]{String.valueOf(sms.Id)});
-                        if (ret > 0) {
-                            deleteListViewItem(mCurrentPosLongClick);
-                        }
-                    }
-                }).show();
+        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+        Uri uri = Uri.parse("content://sms/");
+        int ret = getContentResolver().delete(uri, "_id= ?",
+                new String[]{String.valueOf(sms.Id)});
+        if (ret > 0) {
+            deleteListViewItem(mCurrentPosLongClick);
+        }
+    }
+
+    private void deleteAllMessageOfAddress() {
+        Uri uri = Uri.parse("content://sms/");
+        String address = mAddress;
+        if (address == null) return;
+        String where;
+        try {
+            address = String.valueOf(Long.parseLong(address.toString()));
+            where = "address like '%" + address + "'";
+        } catch (NumberFormatException ex) {
+            where = "address='" + address + "'";
+        }
+        if (getContentResolver().delete(uri, where, null) > 0) {
+            finish();
+        } else {
+            Toast.makeText(this, R.string.delete_fail, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void deleteListViewItem(int position) {
@@ -328,14 +357,14 @@ public class SmsContentActivity extends ActionBarActivity {
         String[] reqCols = new String[] {"_id", "body", "date", "type"};
         final List<SmsMessage> results = new ArrayList<>();
 
-        CharSequence address = mAddress;
+        String address = mAddress;
         if (address == null) return;
         String selection;
         try {
             address = String.valueOf(Long.parseLong(address.toString()));
             selection = "address like '%" + address + "'";
         } catch (NumberFormatException ex) {
-            selection = "address=" + address;
+            selection = "address='" + address + "'";
         }
 
         Cursor c = getContentResolver().query(uri, reqCols, selection,
