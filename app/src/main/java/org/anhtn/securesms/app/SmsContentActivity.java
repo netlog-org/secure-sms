@@ -335,7 +335,7 @@ public class SmsContentActivity extends ActionBarActivity {
             address = String.valueOf(Long.parseLong(address.toString()));
             selection = "address like '%" + address + "'";
         } catch (NumberFormatException ex) {
-            selection = "address='" + address + "'";
+            selection = "address=" + address;
         }
 
         Cursor c = getContentResolver().query(uri, reqCols, selection,
