@@ -269,10 +269,10 @@ public class SmsContentActivity extends ActionBarActivity {
             }
             container.setLayoutParams(params);
 
-            final TextView textContent = (TextView) view.findViewById(R.id.text_sms_content);
+            final TextView textContent = (TextView) view.findViewById(android.R.id.text1);
             textContent.setText(smsObject.Content);
 
-            final TextView textDate = (TextView) view.findViewById(R.id.text_sms_date);
+            final TextView textDate = (TextView) view.findViewById(android.R.id.text2);
             textDate.setText(smsObject.Date);
 
             return view;

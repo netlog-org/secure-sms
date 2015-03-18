@@ -26,6 +26,7 @@ import android.widget.TextView;
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.utils.Global;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -181,9 +182,22 @@ public class MainActivity extends ActionBarActivity {
         Cursor c = getContentResolver().query(uri, new String[]{PhoneLookup.DISPLAY_NAME},
                 null, null, null);
         if (c.moveToFirst()) {
-            final String result = c.getString(c.getColumnIndex(PhoneLookup.DISPLAY_NAME));
+            List<String> results = new ArrayList<>();
+            do {
+                results.add(c.getString(c.getColumnIndex(PhoneLookup.DISPLAY_NAME)));
+            } while (c.moveToNext());
             c.close();
-            return result;
+
+            if (results.isEmpty()) return null;
+            else if (results.size() == 1) return results.get(0);
+            else {
+                StringBuilder builder = new StringBuilder(results.get(0));
+                for (int i = 1; i < results.size(); i++) {
+                    builder.append(results.get(i));
+                    builder.append(", ");
+                }
+                return builder.toString();
+            }
         }
         return null;
     }
@@ -211,8 +225,8 @@ public class MainActivity extends ActionBarActivity {
                 view = inflater.inflate(R.layout.view_list_sms_item_1, parent, false);
             }
             final SmsObject smsObject = getItem(position);
-            final TextView textFrom = (TextView) view.findViewById(R.id.text_sms_from);
-            final TextView textContent = (TextView) view.findViewById(R.id.text_sms_content);
+            final TextView textFrom = (TextView) view.findViewById(android.R.id.text1);
+            final TextView textContent = (TextView) view.findViewById(android.R.id.text2);
 
             if (smsObject.FromDisplayName != null) {
                 textFrom.setText(smsObject.FromDisplayName);
