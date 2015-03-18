@@ -13,4 +13,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search_hint">Typing contact name or phone number</string>
     <string name="choose_phone_number">Send message to %s on</string>
+    <string name="call">Call</string>
+    <string name="delete">Delete</string>
+    <string name="add_contact">Add to contact</string>
+    <string name="forward">Forward</string>
+    <string name="message_options">Message options</string>
+    <string name="recent_list">Recent list</string>
 </resources>

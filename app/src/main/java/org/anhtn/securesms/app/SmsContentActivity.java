@@ -1,31 +1,44 @@
 package org.anhtn.securesms.app;
 
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract.RawContacts;
+import android.provider.ContactsContract.CommonDataKinds;
+import android.provider.ContactsContract.Intents;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.crypto.AESHelper;
+import org.anhtn.securesms.model.SmsObject;
+import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
 
 import java.text.DateFormat;
@@ -38,11 +51,16 @@ public class SmsContentActivity extends ActionBarActivity {
 
     private static final String SMS_SENT = "org.anhtn.securesms.SMS_SENT";
 
+    private static final int MENU_COPY_ID = 123;
+    private static final int MENU_FORWARD_ID = 456;
+    private static final int MENU_DELETE_ID = 789;
+
     private SmsListAdapter mAdapter;
     private ProgressBar pb;
     private ListView listView;
     private TextView txtNewSms;
     private String mAddress, mCurrentMsgToSent;
+    private int mCurrentPosLongClick = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +80,11 @@ public class SmsContentActivity extends ActionBarActivity {
 
         pb = (ProgressBar) findViewById(R.id.progress);
         txtNewSms = (TextView) findViewById(R.id.text);
+        final String content = getIntent().getStringExtra("content");
+        if (content != null) {
+            txtNewSms.setText(content);
+        }
+
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,6 +100,15 @@ public class SmsContentActivity extends ActionBarActivity {
         mAdapter = new SmsListAdapter(this, R.layout.view_list_sms_item_1);
         listView = (ListView) findViewById(R.id.list);
         listView.setAdapter(mAdapter);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           int position, long id) {
+                mCurrentPosLongClick = position;
+                return false;
+            }
+        });
+        registerForContextMenu(listView);
     }
 
     @Override
@@ -123,11 +155,139 @@ public class SmsContentActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_call) {
+            String uri = "tel:" + mAddress;
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse(uri));
+            startActivity(intent);
+            return true;
+        }
+        else if (id == R.id.action_delete) {
+            return true;
+        }
+        else if (id == R.id.action_add_contact) {
+            Intent intent = new Intent(Intents.Insert.ACTION);
+            intent.setType(RawContacts.CONTENT_TYPE);
+            intent.putExtra(Intents.Insert.PHONE, mAddress);
+            intent.putExtra(Intents.Insert.PHONE_TYPE,
+                    CommonDataKinds.Phone.TYPE_MOBILE);
+            startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId() == listView.getId()) {
+            menu.setHeaderTitle(R.string.message_options);
+            String[] menuItems = getResources().getStringArray(R.array.message_options);
+            final int[] itemIds = new int[]{
+                    MENU_COPY_ID,
+                    MENU_FORWARD_ID,
+                    MENU_DELETE_ID
+            };
+            for (int i = 0; i<menuItems.length; i++) {
+                menu.add(Menu.NONE, itemIds[i], i, menuItems[i]);
+            }
+            return;
+        }
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case MENU_COPY_ID: {
+                if (mCurrentPosLongClick < 0) break;
+                String text = mAdapter.getItem(mCurrentPosLongClick).Content;
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+                    android.text.ClipboardManager clipboard = (android.text.ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
+                    clipboard.setText(text);
+                } else {
+                    ClipboardManager clipboard = (ClipboardManager)
+                            getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clip = ClipData.newPlainText("secure-sms-content", text);
+                    clipboard.setPrimaryClip(clip);
+                }
+                break;
+            }
+
+            case MENU_FORWARD_ID: {
+                final String[] items = new String[]{
+                        getResources().getString(R.string.action_add),
+                        getResources().getString(R.string.recent_list)
+                };
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                        android.R.layout.simple_list_item_1, items);
+                final List<SmsObject> list = (List<SmsObject>)
+                        CacheHelper.getInstance().get("sms");
+
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.action_add)
+                        .setCancelable(true)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (which == 0) {
+                                    SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+                                    Intent i = new Intent(SmsContentActivity.this,
+                                            ListContactActivity.class);
+                                    i.putExtra("content", sms.Content);
+                                    i.putExtra("address", list.get(which).Address);
+                                    startActivity(i);
+                                } else {
+                                    showChooseContactDialog();
+                                }
+                            }
+                        }).show();
+                break;
+            }
+
+            case MENU_DELETE_ID: {
+                break;
+            }
+
+            default:
+                return super.onContextItemSelected(item);
+        }
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void showChooseContactDialog() {
+        final List<SmsObject> list = (List<SmsObject>)
+                CacheHelper.getInstance().get("sms");
+        final String[] items = new String[list.size()];
+        int i = 0;
+        for (SmsObject obj : list) {
+            items[i++] = (obj.AddressInContact != null)
+                    ? obj.AddressInContact : obj.Address;
+        }
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_list_item_1, items);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.action_add)
+                .setCancelable(true)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+                        Intent i = new Intent(SmsContentActivity.this,
+                                SmsContentActivity.class);
+                        i.putExtra("content", sms.Content);
+                        i.putExtra("address", list.get(which).Address);
+                        i.putExtra("addressInContact", list.get(which).AddressInContact);
+                        startActivity(i);
+                    }
+                }).show();
     }
 
     private void scrollListViewToBottom() {
@@ -137,7 +297,7 @@ public class SmsContentActivity extends ActionBarActivity {
     private void loadData() {
         Uri inboxUri = Uri.parse("content://sms/");
         String[] reqCols = new String[] {"body", "date", "type"};
-        final List<SmsObject> results = new ArrayList<>();
+        final List<SmsMessage> results = new ArrayList<>();
 
         CharSequence address = mAddress;
         if (address == null) return;
@@ -153,24 +313,24 @@ public class SmsContentActivity extends ActionBarActivity {
                 null, "date ASC");
         if (c.moveToFirst()) {
             do {
-                SmsObject smsObject = new SmsObject();
-                smsObject.Type = c.getInt(c.getColumnIndex("type"));
-                if (smsObject.Type != SmsObject.TYPE_INBOX
-                        && smsObject.Type != SmsObject.TYPE_SENT) {
+                SmsMessage sms = new SmsMessage();
+                sms.Type = c.getInt(c.getColumnIndex("type"));
+                if (sms.Type != SmsMessage.TYPE_INBOX
+                        && sms.Type != SmsMessage.TYPE_SENT) {
 
-                    Global.log("Ignore sms type: " + smsObject.Type);
+                    Global.log("Ignore sms type: " + sms.Type);
                     continue;
                 }
                 try {
                     Date date = new Date(Long.parseLong(c.getString(c.getColumnIndex("date"))));
-                    smsObject.Date = DateFormat.getInstance().format(date);
+                    sms.Date = DateFormat.getInstance().format(date);
                     String content = c.getString(c.getColumnIndex("body"));
                     if (content.startsWith(Global.ALGORITHM)) {
                         content = content.replace(Global.ALGORITHM, "");
                         content = AESHelper.decryptFromBase64(Global.DEFAULT_PASSWORD, content);
                     }
-                    smsObject.Content = content;
-                    results.add(smsObject);
+                    sms.Content = content;
+                    results.add(sms);
                 } catch (NumberFormatException ignored) { }
             } while (c.moveToNext());
         }
@@ -179,8 +339,8 @@ public class SmsContentActivity extends ActionBarActivity {
         pb.post(new Runnable() {
             @Override
             public void run() {
-                for (SmsObject smsObject : results) {
-                    mAdapter.add(smsObject);
+                for (SmsMessage sms : results) {
+                    mAdapter.add(sms);
                 }
                 pb.setVisibility(View.GONE);
                 listView.setVisibility(View.VISIBLE);
@@ -209,22 +369,22 @@ public class SmsContentActivity extends ActionBarActivity {
         public void onReceive(Context context, Intent intent) {
             if (mCurrentMsgToSent == null) return;
 
-            SmsObject smsObject = new SmsObject();
-            smsObject.Content = mCurrentMsgToSent;
-            smsObject.Type = SmsObject.TYPE_SENT;
+            SmsMessage sms = new SmsMessage();
+            sms.Content = mCurrentMsgToSent;
+            sms.Type = SmsMessage.TYPE_SENT;
 
             String sOk = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
             String sFail = "Send message failed";
-            smsObject.Date = (getResultCode() == RESULT_OK) ? sOk : sFail;
+            sms.Date = (getResultCode() == RESULT_OK) ? sOk : sFail;
 
-            mAdapter.add(smsObject);
+            mAdapter.add(sms);
             scrollListViewToBottom();
             mCurrentMsgToSent = null;
         }
     };
 
 
-    private static class SmsObject {
+    private static class SmsMessage {
         public static final int TYPE_INBOX = 1;
         public static final int TYPE_SENT = 2;
 
@@ -234,7 +394,7 @@ public class SmsContentActivity extends ActionBarActivity {
     }
 
 
-    private static class SmsListAdapter extends ArrayAdapter<SmsObject> {
+    private static class SmsListAdapter extends ArrayAdapter<SmsMessage> {
 
         public SmsListAdapter(Context context, int resource) {
             super(context, resource);
@@ -249,12 +409,12 @@ public class SmsContentActivity extends ActionBarActivity {
                 view = inflater.inflate(R.layout.view_list_sms_item_2, parent, false);
             }
 
-            final SmsObject smsObject = getItem(position);
+            final SmsMessage sms = getItem(position);
             LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                     container.getLayoutParams();
 
-            if (smsObject.Type == SmsObject.TYPE_INBOX) {
+            if (sms.Type == SmsMessage.TYPE_INBOX) {
                 params.leftMargin = getContext().getResources()
                         .getDimensionPixelSize(R.dimen.message_item_small_margin);
                 params.rightMargin = getContext().getResources()
@@ -270,10 +430,10 @@ public class SmsContentActivity extends ActionBarActivity {
             container.setLayoutParams(params);
 
             final TextView textContent = (TextView) view.findViewById(android.R.id.text1);
-            textContent.setText(smsObject.Content);
+            textContent.setText(sms.Content);
 
             final TextView textDate = (TextView) view.findViewById(android.R.id.text2);
-            textDate.setText(smsObject.Date);
+            textDate.setText(sms.Date);
 
             return view;
         }

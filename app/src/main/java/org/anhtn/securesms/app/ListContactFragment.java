@@ -133,6 +133,7 @@ public class ListContactFragment extends ListFragment
         Intent i = new Intent(getActivity(), SmsContentActivity.class);
         i.putExtra("address", phoneNumber);
         i.putExtra("addressInContact", contactName);
+        i.putExtra("content", getActivity().getIntent().getStringExtra("content"));
         startActivity(i);
     }
 
