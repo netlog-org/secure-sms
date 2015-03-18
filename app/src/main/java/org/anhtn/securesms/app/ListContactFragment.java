@@ -20,7 +20,7 @@ import android.widget.TextView;
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.loaders.ContactLoader;
 import org.anhtn.securesms.utils.CacheHelper;
-import org.anhtn.securesms.utils.ContactObject;
+import org.anhtn.securesms.model.ContactObject;
 import org.anhtn.securesms.utils.Global;
 
 import java.util.List;

@@ -7,7 +7,7 @@ import android.os.Build;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Contacts;
 
-import org.anhtn.securesms.utils.ContactObject;
+import org.anhtn.securesms.model.ContactObject;
 
 import java.util.ArrayList;
 import java.util.List;

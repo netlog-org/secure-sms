@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.model.SmsObject;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
 
@@ -203,13 +204,6 @@ public class MainActivity extends ActionBarActivity {
             }
         }
         return null;
-    }
-
-
-    private static class SmsObject {
-        public String From;
-        public String FromDisplayName;
-        public String Content;
     }
 
 

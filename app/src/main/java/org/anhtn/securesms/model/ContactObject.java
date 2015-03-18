@@ -1,4 +1,4 @@
-package org.anhtn.securesms.utils;
+package org.anhtn.securesms.model;
 
 import java.util.HashMap;
 import java.util.Map;
