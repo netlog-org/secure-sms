@@ -24,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
 
 import java.util.ArrayList;
@@ -41,6 +42,7 @@ public class MainActivity extends ActionBarActivity {
     private ProgressBar pb;
     private ListView listView;
     private HashMap<String, String> mContactData = new HashMap<>();
+    private CacheHelper mCache = CacheHelper.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

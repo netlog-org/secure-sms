@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.loaders.ContactLoader;
+import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.ContactObject;
 import org.anhtn.securesms.utils.Global;
 
@@ -87,8 +88,20 @@ public class ListContactFragment extends ListFragment
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if (CacheHelper.getInstance().contains("contact")) {
+            mAdapter.clear();
+            List<ContactObject> contactObjects = (List<ContactObject>)
+                    CacheHelper.getInstance().get("contact");
+            for (ContactObject object : contactObjects) {
+                mAdapter.add(object);
+            }
+            getListView().setVisibility(View.VISIBLE);
+            pb.setVisibility(View.INVISIBLE);
+        }
         mLoaderManager.initLoader(0, null, this);
     }
 
@@ -102,12 +115,12 @@ public class ListContactFragment extends ListFragment
         if (mAdapter.isEmpty()) {
             getListView().setVisibility(View.VISIBLE);
             pb.setVisibility(View.INVISIBLE);
-            for (ContactObject object : data) {
-                mAdapter.add(object);
-            }
+            CacheHelper.getInstance().put("contact", data);
         } else  {
-            // tam thoi chua lam gi
             mAdapter.clear();
+        }
+        for (ContactObject object : data) {
+            mAdapter.add(object);
         }
     }
 
