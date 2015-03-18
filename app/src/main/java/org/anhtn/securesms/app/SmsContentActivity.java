@@ -13,9 +13,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract.RawContacts;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Intents;
+import android.provider.ContactsContract.RawContacts;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
@@ -30,7 +30,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,7 +48,7 @@ import java.util.List;
 
 public class SmsContentActivity extends ActionBarActivity {
 
-    private static final String SMS_SENT = "org.anhtn.securesms.SMS_SENT";
+    private static final String INTENT_SMS_SENT = "org.anhtn.securesms.INTENT_SMS_SENT";
 
     private static final int MENU_COPY_ID = 123;
     private static final int MENU_FORWARD_ID = 456;
@@ -130,7 +129,7 @@ public class SmsContentActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mSmsSentReceiver, new IntentFilter(SMS_SENT));
+        registerReceiver(mSmsSentReceiver, new IntentFilter(INTENT_SMS_SENT));
     }
 
     @Override
@@ -354,10 +353,10 @@ public class SmsContentActivity extends ActionBarActivity {
             if (!PhoneNumberUtils.isWellFormedSmsAddress(mAddress)) {
                 throw new RuntimeException("Not have well formed sms address");
             }
-            PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(SMS_SENT), 0);
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(INTENT_SMS_SENT), 0);
             SmsManager sms = SmsManager.getDefault();
             sms.sendTextMessage(mAddress, null, msg, pi, null);
-            sendBroadcast(new Intent(SMS_SENT));
+            sendBroadcast(new Intent(INTENT_SMS_SENT));
         } catch (Exception ex) {
             Global.error("Failed to send sms: " + ex.getMessage());
         }
