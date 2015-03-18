@@ -70,8 +70,7 @@ public class ListContactFragment extends ListFragment
                     );
 
                     new AlertDialog.Builder(getActivity())
-                            .setTitle(getResources().getString(R.string.choose_phone_number,
-                                    object.DisplayName))
+                            .setTitle(getString(R.string.choose_phone_number, object.DisplayName))
                             .setCancelable(true)
                             .setNegativeButton(android.R.string.cancel, null)
                             .setAdapter(adapter, new DialogInterface.OnClickListener() {
