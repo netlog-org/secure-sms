@@ -31,7 +31,6 @@ public class ListContactFragment extends ListFragment
 
     private ProgressBar pb;
     private ListContactAdapter mAdapter;
-    private LoaderManager mLoaderManager;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,6 @@ public class ListContactFragment extends ListFragment
 
         mAdapter = new ListContactAdapter(getActivity(), R.layout.view_list_sms_item_1);
         setListAdapter(mAdapter);
-        mLoaderManager = getActivity().getSupportLoaderManager();
     }
 
     @Override
@@ -101,7 +99,8 @@ public class ListContactFragment extends ListFragment
             getListView().setVisibility(View.VISIBLE);
             pb.setVisibility(View.INVISIBLE);
         }
-        mLoaderManager.initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, this);
+
     }
 
     @Override
