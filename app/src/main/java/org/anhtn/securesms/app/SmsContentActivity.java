@@ -94,7 +94,7 @@ public class SmsContentActivity extends ActionBarActivity {
                     String cipherText = AESHelper.encryptToBase64(
                             Global.DEFAULT_PASSWORD, mCurrentMsgToSent);
                     if (cipherText != null) {
-                        sendSms(Global.ALGORITHM + cipherText);
+                        sendSms(Global.MESSAGE_PREFIX + cipherText);
                     }
                 }
             }
@@ -387,8 +387,8 @@ public class SmsContentActivity extends ActionBarActivity {
                     Date date = new Date(Long.parseLong(c.getString(c.getColumnIndex("date"))));
                     sms.Date = DateFormat.getInstance().format(date);
                     String content = c.getString(c.getColumnIndex("body"));
-                    if (content.startsWith(Global.ALGORITHM)) {
-                        content = content.replace(Global.ALGORITHM, "");
+                    if (content.startsWith(Global.MESSAGE_PREFIX)) {
+                        content = content.replace(Global.MESSAGE_PREFIX, "");
                         content = AESHelper.decryptFromBase64(Global.DEFAULT_PASSWORD, content);
                         if (content == null) continue;
                     }
