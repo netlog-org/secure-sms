@@ -247,6 +247,27 @@ public class SmsContentActivity extends ActionBarActivity
         return true;
     }
 
+    @Override
+    public Loader<List<SmsContentObject>> onCreateLoader(int id, Bundle args) {
+        return new SmsContentLoader(this, args.getString("address"));
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<SmsContentObject>> loader,
+                               List<SmsContentObject> data) {
+        for (SmsContentObject sms : data) {
+            mAdapter.add(sms);
+        }
+        pb.setVisibility(View.GONE);
+        listView.setVisibility(View.VISIBLE);
+        scrollListViewToBottom();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<SmsContentObject>> loader) {
+        Global.log("Sms content loader reset");
+    }
+
     @SuppressWarnings("unchecked")
     private void showChooseContactDialog() {
         final List<SmsObject> list = (List<SmsObject>)
@@ -393,26 +414,6 @@ public class SmsContentActivity extends ActionBarActivity
             mCurrentMsgToSent = null;
         }
     };
-
-    @Override
-    public Loader<List<SmsContentObject>> onCreateLoader(int id, Bundle args) {
-        return new SmsContentLoader(this, args.getString("address"));
-    }
-
-    @Override
-    public void onLoadFinished(Loader<List<SmsContentObject>> loader, List<SmsContentObject> data) {
-        for (SmsContentObject sms : data) {
-            mAdapter.add(sms);
-        }
-        pb.setVisibility(View.GONE);
-        listView.setVisibility(View.VISIBLE);
-        scrollListViewToBottom();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<List<SmsContentObject>> loader) {
-        Global.log("Sms content loader reset");
-    }
 
 
     private static class SmsListAdapter extends ArrayAdapter<SmsContentObject> {
