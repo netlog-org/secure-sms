@@ -25,12 +25,14 @@
         <activity
             android:name=".app.SmsContentActivity"
             android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:parentActivityName=".app.SmsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".app.SmsActivity" />
         </activity>
         <activity
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:parentActivityName=".app.SmsActivity"
             android:name=".app.ListContactActivity"
             android:label="@string/title_activity_list_contact" >
