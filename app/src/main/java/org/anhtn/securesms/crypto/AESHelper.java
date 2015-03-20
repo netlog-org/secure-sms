@@ -135,10 +135,10 @@ public class AESHelper {
     }
 
     private static byte[] fromBase64(String src) {
-        return Base64.decode(src, Base64.DEFAULT);
+        return Base64.decode(src, Base64.NO_WRAP);
     }
 
     private static String toBase64(byte[] src) {
-        return Base64.encodeToString(src, Base64.DEFAULT);
+        return Base64.encodeToString(src, Base64.NO_WRAP);
     }
 }
