@@ -9,13 +9,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Intents;
 import android.provider.ContactsContract.RawContacts;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
@@ -37,17 +38,19 @@ import android.widget.Toast;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.crypto.AESHelper;
+import org.anhtn.securesms.loaders.SmsContentLoader;
+import org.anhtn.securesms.model.SmsMessage;
 import org.anhtn.securesms.model.SmsObject;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
-public class SmsContentActivity extends ActionBarActivity {
+public class SmsContentActivity extends ActionBarActivity
+        implements LoaderManager.LoaderCallbacks<List<SmsMessage>> {
 
     private static final String INTENT_SMS_SENT = "org.anhtn.securesms.INTENT_SMS_SENT";
 
@@ -122,12 +125,15 @@ public class SmsContentActivity extends ActionBarActivity {
         listView.setVisibility(View.GONE);
         mAdapter.clear();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                loadData();
-            }
-        }).start();
+        Bundle args = new Bundle();
+        args.putString("address", mAddress);
+        if (getSupportLoaderManager().getLoader(0) == null) {
+            getSupportLoaderManager().initLoader(0, args, this);
+        } else {
+            getSupportLoaderManager().restartLoader(0, args, this);
+        }
+        pb.setVisibility(View.VISIBLE);
+        listView.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -355,63 +361,6 @@ public class SmsContentActivity extends ActionBarActivity {
         listView.setSelection(mAdapter.getCount() - 1);
     }
 
-    private void loadData() {
-        Uri uri = Uri.parse("content://sms/");
-        String[] reqCols = new String[] {"_id", "body", "date", "type"};
-        final List<SmsMessage> results = new ArrayList<>();
-
-        String address = mAddress;
-        if (address == null) return;
-        String selection;
-        try {
-            address = String.valueOf(Long.parseLong(address.toString()));
-            selection = "address like '%" + address + "'";
-        } catch (NumberFormatException ex) {
-            selection = "address='" + address + "'";
-        }
-
-        Cursor c = getContentResolver().query(uri, reqCols, selection,
-                null, "date ASC");
-        if (c.moveToFirst()) {
-            do {
-                SmsMessage sms = new SmsMessage();
-                sms.Type = c.getInt(c.getColumnIndex("type"));
-                sms.Id = c.getInt(c.getColumnIndex("_id"));
-                if (sms.Type != SmsMessage.TYPE_INBOX
-                        && sms.Type != SmsMessage.TYPE_SENT) {
-
-                    Global.log("Ignore sms type: " + sms.Type);
-                    continue;
-                }
-                try {
-                    Date date = new Date(Long.parseLong(c.getString(c.getColumnIndex("date"))));
-                    sms.Date = DateFormat.getInstance().format(date);
-                    String content = c.getString(c.getColumnIndex("body"));
-                    if (content.startsWith(Global.MESSAGE_PREFIX)) {
-                        content = content.replace(Global.MESSAGE_PREFIX, "");
-                        content = AESHelper.decryptFromBase64(Global.DEFAULT_PASSWORD, content);
-                        if (content == null) continue;
-                    }
-                    sms.Content = content;
-                    results.add(sms);
-                } catch (NumberFormatException ignored) { }
-            } while (c.moveToNext());
-        }
-        c.close();
-
-        pb.post(new Runnable() {
-            @Override
-            public void run() {
-                for (SmsMessage sms : results) {
-                    mAdapter.add(sms);
-                }
-                pb.setVisibility(View.GONE);
-                listView.setVisibility(View.VISIBLE);
-                scrollListViewToBottom();
-            }
-        });
-    }
-
     private void sendSms(String msg) {
         try {
             if (!PhoneNumberUtils.isWellFormedSmsAddress(mAddress)) {
@@ -425,7 +374,6 @@ public class SmsContentActivity extends ActionBarActivity {
             Global.error("Failed to send sms: " + ex.getMessage());
         }
     }
-
 
     private BroadcastReceiver mSmsSentReceiver = new BroadcastReceiver() {
         @Override
@@ -446,15 +394,24 @@ public class SmsContentActivity extends ActionBarActivity {
         }
     };
 
+    @Override
+    public Loader<List<SmsMessage>> onCreateLoader(int id, Bundle args) {
+        return new SmsContentLoader(this, args.getString("address"));
+    }
 
-    private static class SmsMessage {
-        public static final int TYPE_INBOX = 1;
-        public static final int TYPE_SENT = 2;
+    @Override
+    public void onLoadFinished(Loader<List<SmsMessage>> loader, List<SmsMessage> data) {
+        for (SmsMessage sms : data) {
+            mAdapter.add(sms);
+        }
+        pb.setVisibility(View.GONE);
+        listView.setVisibility(View.VISIBLE);
+        scrollListViewToBottom();
+    }
 
-        public int Id;
-        public int Type;
-        public String Content;
-        public String Date;
+    @Override
+    public void onLoaderReset(Loader<List<SmsMessage>> loader) {
+        Global.log("Sms content loader reset");
     }
 
 
