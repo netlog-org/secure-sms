@@ -132,8 +132,6 @@ public class SmsContentActivity extends ActionBarActivity
         } else {
             getSupportLoaderManager().restartLoader(0, args, this);
         }
-        pb.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.INVISIBLE);
     }
 
     @Override
