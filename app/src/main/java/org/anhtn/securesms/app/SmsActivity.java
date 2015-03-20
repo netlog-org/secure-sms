@@ -5,10 +5,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract.PhoneLookup;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -24,25 +23,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.loaders.SmsLoader;
 import org.anhtn.securesms.model.SmsObject;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
-public class SmsActivity extends ActionBarActivity {
+public class SmsActivity extends ActionBarActivity
+        implements LoaderManager.LoaderCallbacks<List<SmsObject>>{
 
     public static boolean sLeaveFromChild = false;
 
     private SmsListAdapter mAdapter;
     private ProgressBar pb;
     private ListView listView;
-    private HashMap<String, String> mContactData = new HashMap<>();
+
     private CacheHelper mCache = CacheHelper.getInstance();
 
     @Override
@@ -82,12 +79,11 @@ public class SmsActivity extends ActionBarActivity {
         listView.setVisibility(View.GONE);
         mAdapter.clear();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                loadData();
-            }
-        }).start();
+        if (getSupportLoaderManager().getLoader(0) == null) {
+            getSupportLoaderManager().initLoader(0, null, this);
+        } else {
+            getSupportLoaderManager().restartLoader(0, null, this);
+        }
     }
 
     @Override
@@ -114,6 +110,25 @@ public class SmsActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public Loader<List<SmsObject>> onCreateLoader(int id, Bundle args) {
+        return new SmsLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<List<SmsObject>> loader, List<SmsObject> data) {
+        for (SmsObject object : data) {
+            mAdapter.add(object);
+        }
+        pb.setVisibility(View.GONE);
+        listView.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<SmsObject>> loader) {
+        Global.log("Sms loader reset");
+    }
+
     @SuppressLint("InflateParams")
     private void showInputPasswordDialog() {
         View container = getLayoutInflater().inflate(R.layout.view_dialog_password, null);
@@ -132,79 +147,6 @@ public class SmsActivity extends ActionBarActivity {
                         }
                     }
                 }).show();
-    }
-
-    private void loadData() {
-        Uri inboxUri = Uri.parse("content://sms/");
-        String[] reqCols = new String[] {"address, body"};
-        final List<SmsObject> results = new ArrayList<>();
-
-        Cursor c = getContentResolver().query(inboxUri, reqCols, null, null, "date DESC");
-        Set<String> addressSet = new HashSet<>();
-        if (c.moveToFirst()) {
-            do {
-                String address = c.getString(c.getColumnIndex("address"));
-                if (address.startsWith("+84")) {
-                    address = address.replace("+84", "0");
-                }
-
-                final boolean ok = addressSet.add(address);
-                if (ok) {
-                    SmsObject smsObject = new SmsObject();
-                    smsObject.Address = address;
-                    smsObject.Content = c.getString(c.getColumnIndex("body"));
-                    try {
-                        String phoneNumber = String.valueOf(Long.parseLong(address));
-                        if (mContactData.containsKey(phoneNumber)) {
-                            smsObject.AddressInContact = mContactData.get(phoneNumber);
-                        } else {
-                            smsObject.AddressInContact = phoneLookup(phoneNumber);
-                            mContactData.put(phoneNumber, smsObject.AddressInContact);
-                        }
-                    } catch (NumberFormatException ignored) {}
-                    results.add(smsObject);
-                }
-            } while (c.moveToNext());
-        }
-        c.close();
-
-        pb.post(new Runnable() {
-            @Override
-            public void run() {
-                for (SmsObject smsObject : results) {
-                    mAdapter.add(smsObject);
-                }
-                pb.setVisibility(View.GONE);
-                listView.setVisibility(View.VISIBLE);
-            }
-        });
-        mCache.put("sms", results);
-    }
-
-    private String phoneLookup(String phoneNumber) {
-        Uri uri = Uri.withAppendedPath(PhoneLookup.CONTENT_FILTER_URI,
-                Uri.encode(phoneNumber));
-        Cursor c = getContentResolver().query(uri, new String[]{PhoneLookup.DISPLAY_NAME},
-                null, null, null);
-        if (c.moveToFirst()) {
-            Set<String> results = new HashSet<>();
-            do {
-                results.add(c.getString(c.getColumnIndex(PhoneLookup.DISPLAY_NAME)));
-            } while (c.moveToNext());
-            c.close();
-
-            if (results.isEmpty()) return null;
-            else {
-                StringBuilder builder = new StringBuilder();
-                int i = 0;
-                for (String s : results) {
-                    if (i++ > 0) builder.append(", ");
-                    builder.append(s);
-                }
-                return builder.toString();
-            }
-        }
-        return null;
     }
 
 
