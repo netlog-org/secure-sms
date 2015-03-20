@@ -39,7 +39,7 @@ import android.widget.Toast;
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.loaders.SmsContentLoader;
-import org.anhtn.securesms.model.SmsMessage;
+import org.anhtn.securesms.model.SmsContentObject;
 import org.anhtn.securesms.model.SmsObject;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
@@ -50,7 +50,7 @@ import java.util.List;
 
 
 public class SmsContentActivity extends ActionBarActivity
-        implements LoaderManager.LoaderCallbacks<List<SmsMessage>> {
+        implements LoaderManager.LoaderCallbacks<List<SmsContentObject>> {
 
     private static final String INTENT_SMS_SENT = "org.anhtn.securesms.INTENT_SMS_SENT";
 
@@ -146,7 +146,7 @@ public class SmsContentActivity extends ActionBarActivity
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mSmsSentReceiver);
-        MainActivity.sLeaveFromChild = true;
+        SmsActivity.sLeaveFromChild = true;
     }
 
     @Override
@@ -267,7 +267,7 @@ public class SmsContentActivity extends ActionBarActivity
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+                        SmsContentObject sms = mAdapter.getItem(mCurrentPosLongClick);
                         Intent i = new Intent(SmsContentActivity.this,
                                 SmsContentActivity.class);
                         i.putExtra("content", sms.Content);
@@ -326,7 +326,7 @@ public class SmsContentActivity extends ActionBarActivity
     }
 
     private void deleteMessage() {
-        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+        SmsContentObject sms = mAdapter.getItem(mCurrentPosLongClick);
         Uri uri = Uri.parse("content://sms/");
         int ret = getContentResolver().delete(uri, "_id= ?",
                 new String[]{String.valueOf(sms.Id)});
@@ -380,9 +380,9 @@ public class SmsContentActivity extends ActionBarActivity
         public void onReceive(Context context, Intent intent) {
             if (mCurrentMsgToSent == null) return;
 
-            SmsMessage sms = new SmsMessage();
+            SmsContentObject sms = new SmsContentObject();
             sms.Content = mCurrentMsgToSent;
-            sms.Type = SmsMessage.TYPE_SENT;
+            sms.Type = SmsContentObject.TYPE_SENT;
 
             String sOk = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
             String sFail = "Send message failed";
@@ -395,13 +395,13 @@ public class SmsContentActivity extends ActionBarActivity
     };
 
     @Override
-    public Loader<List<SmsMessage>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<SmsContentObject>> onCreateLoader(int id, Bundle args) {
         return new SmsContentLoader(this, args.getString("address"));
     }
 
     @Override
-    public void onLoadFinished(Loader<List<SmsMessage>> loader, List<SmsMessage> data) {
-        for (SmsMessage sms : data) {
+    public void onLoadFinished(Loader<List<SmsContentObject>> loader, List<SmsContentObject> data) {
+        for (SmsContentObject sms : data) {
             mAdapter.add(sms);
         }
         pb.setVisibility(View.GONE);
@@ -410,12 +410,12 @@ public class SmsContentActivity extends ActionBarActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<List<SmsMessage>> loader) {
+    public void onLoaderReset(Loader<List<SmsContentObject>> loader) {
         Global.log("Sms content loader reset");
     }
 
 
-    private static class SmsListAdapter extends ArrayAdapter<SmsMessage> {
+    private static class SmsListAdapter extends ArrayAdapter<SmsContentObject> {
 
         public SmsListAdapter(Context context, int resource) {
             super(context, resource);
@@ -430,12 +430,12 @@ public class SmsContentActivity extends ActionBarActivity
                 view = inflater.inflate(R.layout.view_list_sms_item_2, parent, false);
             }
 
-            final SmsMessage sms = getItem(position);
+            final SmsContentObject sms = getItem(position);
             LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                     container.getLayoutParams();
 
-            if (sms.Type == SmsMessage.TYPE_INBOX) {
+            if (sms.Type == SmsContentObject.TYPE_INBOX) {
                 params.leftMargin = getContext().getResources()
                         .getDimensionPixelSize(R.dimen.message_item_small_margin);
                 params.rightMargin = getContext().getResources()

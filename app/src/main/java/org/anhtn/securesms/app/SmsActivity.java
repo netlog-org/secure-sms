@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class MainActivity extends ActionBarActivity {
+public class SmsActivity extends ActionBarActivity {
 
     public static boolean sLeaveFromChild = false;
 
@@ -61,7 +61,7 @@ public class MainActivity extends ActionBarActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(MainActivity.this, SmsContentActivity.class);
+                Intent i = new Intent(SmsActivity.this, SmsContentActivity.class);
                 final SmsObject smsObject = mAdapter.getItem(position);
                 i.putExtra("address", smsObject.Address);
                 i.putExtra("addressInContact", smsObject.AddressInContact);

@@ -5,7 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import org.anhtn.securesms.crypto.AESHelper;
-import org.anhtn.securesms.model.SmsMessage;
+import org.anhtn.securesms.model.SmsContentObject;
 import org.anhtn.securesms.utils.Global;
 
 import java.text.DateFormat;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SmsContentLoader extends SimpleBaseLoader<List<SmsMessage>> {
+public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
 
     private String mAddress;
 
@@ -23,10 +23,10 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsMessage>> {
     }
 
     @Override
-    public List<SmsMessage> loadInBackground() {
+    public List<SmsContentObject> loadInBackground() {
         Uri uri = Uri.parse("content://sms/");
         String[] reqCols = new String[] {"_id", "body", "date", "type"};
-        final List<SmsMessage> results = new ArrayList<>();
+        final List<SmsContentObject> results = new ArrayList<>();
 
         String address = mAddress;
         if (address == null) return null;
@@ -42,11 +42,11 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsMessage>> {
                 null, "date ASC");
         if (c.moveToFirst()) {
             do {
-                SmsMessage sms = new SmsMessage();
+                SmsContentObject sms = new SmsContentObject();
                 sms.Type = c.getInt(c.getColumnIndex("type"));
                 sms.Id = c.getInt(c.getColumnIndex("_id"));
-                if (sms.Type != SmsMessage.TYPE_INBOX
-                        && sms.Type != SmsMessage.TYPE_SENT) {
+                if (sms.Type != SmsContentObject.TYPE_INBOX
+                        && sms.Type != SmsContentObject.TYPE_SENT) {
 
                     Global.log("Ignore sms type: " + sms.Type);
                     continue;

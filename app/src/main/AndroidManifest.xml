@@ -13,7 +13,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".app.MainActivity"
+            android:name=".app.SmsActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask" >
             <intent-filter>
@@ -25,13 +25,13 @@
         <activity
             android:name=".app.SmsContentActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".app.MainActivity" >
+            android:parentActivityName=".app.SmsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.MainActivity" />
+                android:value=".app.SmsActivity" />
         </activity>
         <activity
-            android:parentActivityName=".app.MainActivity"
+            android:parentActivityName=".app.SmsActivity"
             android:name=".app.ListContactActivity"
             android:label="@string/title_activity_list_contact" >
         </activity>
@@ -40,7 +40,7 @@
             android:resource="@xml/searchable" />
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value=".app.MainActivity" />
+            android:value=".app.SmsActivity" />
     </application>
 
 </manifest>
