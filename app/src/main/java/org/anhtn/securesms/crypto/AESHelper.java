@@ -75,7 +75,7 @@ public class AESHelper {
 
         try {
             String[] fields = cipherText.split(SPLITTER);
-            byte[] salt = fromBase64(fields[0]);
+            byte[] salt = fromBase64(fields[0] + "23:01");
             byte[] iv = fromBase64(fields[1]);
             byte[] cipherBytes = fromBase64(fields[2]);
 
@@ -95,6 +95,7 @@ public class AESHelper {
                 | InvalidAlgorithmParameterException
                 | InvalidKeyException
                 | InvalidKeySpecException
+                | IllegalArgumentException
                 | UnsupportedEncodingException e)
         {
             Global.error("AES-exception", e);

@@ -91,8 +91,11 @@ public class SmsContentActivity extends ActionBarActivity {
                 mCurrentMsgToSent = txtNewSms.getText().toString();
                 if (mCurrentMsgToSent.length() > 0) {
                     txtNewSms.setText("");
-                    sendSms(Global.ALGORITHM + AESHelper.encryptToBase64(
-                            Global.DEFAULT_PASSWORD, mCurrentMsgToSent));
+                    String cipherText = AESHelper.encryptToBase64(
+                            Global.DEFAULT_PASSWORD, mCurrentMsgToSent);
+                    if (cipherText != null) {
+                        sendSms(Global.ALGORITHM + cipherText);
+                    }
                 }
             }
         });
@@ -387,6 +390,7 @@ public class SmsContentActivity extends ActionBarActivity {
                     if (content.startsWith(Global.ALGORITHM)) {
                         content = content.replace(Global.ALGORITHM, "");
                         content = AESHelper.decryptFromBase64(Global.DEFAULT_PASSWORD, content);
+                        if (content == null) continue;
                     }
                     sms.Content = content;
                     results.add(sms);
