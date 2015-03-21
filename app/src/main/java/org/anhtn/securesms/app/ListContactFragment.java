@@ -176,14 +176,14 @@ public class ListContactFragment extends ListFragment
         try {
             String keyword = String.valueOf(Long.parseLong(s));
             for (ContactObject contact : mContactList) {
-                for (String phoneNumber : contact.PhoneNumbers.keySet()) {
+                for (String number : contact.PhoneNumbers.keySet()) {
                     List<Integer> matchedPos = new ArrayList<>();
-                    if (Global.smartContains(phoneNumber, keyword, matchedPos)) {
-                        if (phoneNumber.equals(contact.PrimaryNumber)) {
+                    if (Global.smartContains(number, keyword, matchedPos)) {
+                        if (number.equals(contact.PrimaryNumber)) {
                             Integer[] arr = new Integer[matchedPos.size()];
                             ContactObject clone = new ContactObject(contact);
                             clone.SpannablePrimaryNumber = getSpannableWithBoldInSomeParts(
-                                    phoneNumber, matchedPos.toArray(arr));
+                                    number, matchedPos.toArray(arr));
                             mAdapter.add(clone);
                         } else {
                             mAdapter.add(contact);
@@ -258,15 +258,17 @@ public class ListContactFragment extends ListFragment
             final TextView txtName = (TextView) view.findViewById(android.R.id.text1);
             final TextView txtPhone = (TextView) view.findViewById(android.R.id.text2);
             txtName.setText(object.DisplayName);
+
+            String type = object.PhoneNumbers.get(object.PrimaryNumber);
+            if (type == null) type = "";
             if (object.SpannablePrimaryNumber != null) {
                 SpannableStringBuilder builder = (SpannableStringBuilder)
                         object.SpannablePrimaryNumber;
                 builder.append(" ");
-                builder.append(object.PhoneNumbers.get(object.PrimaryNumber));
+                builder.append(type);
                 txtPhone.setText(builder);
             } else {
-                txtPhone.setText(object.PrimaryNumber + " "
-                    + object.PhoneNumbers.get(object.PrimaryNumber));
+                txtPhone.setText(object.PrimaryNumber + " " + type);
             }
 
             return view;
