@@ -25,4 +25,6 @@
     <string name="no_result">No resuls were found</string>
     <string name="new_sms_to">New message to %s</string>
     <string name="no_recent_conversation">No recent conversations</string>
+    <string name="title_activity_splash_screen">SplashScreenActivity</string>
+    <string name="version">Version 1.1</string>
 </resources>
