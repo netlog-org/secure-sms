@@ -33,6 +33,8 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
         String selection;
         try {
             address = String.valueOf(Long.parseLong(address));
+            if (address.length() < Global.MIN_PHONE_NUMBER_LENGTH)
+                throw new NumberFormatException();
             selection = "address like '%" + address + "'";
         } catch (NumberFormatException ex) {
             selection = "address='" + address + "'";

@@ -9,6 +9,8 @@ public class Global {
     public static final String DEFAULT_PASSWORD = "securesms";
     public static final String MESSAGE_PREFIX = "AES-128 ";
 
+    public static final int MIN_PHONE_NUMBER_LENGTH = 9;
+
     public static boolean smartContains(String s1, String s2, List<Integer> matchedPos) {
         if (s2.length() > s1.length()) return false;
         else if (s2.length() == s1.length()) return s1.equals(s2);
