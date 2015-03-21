@@ -39,6 +39,7 @@ public class SmsActivity extends ActionBarActivity
     private SmsListAdapter mAdapter;
     private ProgressBar pb;
     private ListView listView;
+    private View viewListContainer;
 
     private CacheHelper mCache = CacheHelper.getInstance();
 
@@ -52,6 +53,7 @@ public class SmsActivity extends ActionBarActivity
         getSupportActionBar().setTitle(R.string.app_name);
 
         pb = (ProgressBar) findViewById(R.id.progress);
+        viewListContainer = findViewById(R.id.list_container);
 
         mAdapter = new SmsListAdapter(this, R.layout.view_list_sms_item_1);
         listView = (ListView) findViewById(R.id.list);
@@ -65,6 +67,7 @@ public class SmsActivity extends ActionBarActivity
                 startActivity(i);
             }
         });
+        listView.setEmptyView(findViewById(R.id.text_list_empty));
         listView.setAdapter(mAdapter);
     }
 
@@ -75,8 +78,7 @@ public class SmsActivity extends ActionBarActivity
 //            showInputPasswordDialog();
 //        } else sLeaveFromChild = false;
 
-        pb.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.GONE);
+        setListViewVisible(false);
         mAdapter.clear();
 
         if (getSupportLoaderManager().getLoader(0) == null) {
@@ -120,8 +122,7 @@ public class SmsActivity extends ActionBarActivity
         for (SmsObject object : data) {
             mAdapter.add(object);
         }
-        pb.setVisibility(View.GONE);
-        listView.setVisibility(View.VISIBLE);
+        setListViewVisible(true);
     }
 
     @Override
@@ -147,6 +148,16 @@ public class SmsActivity extends ActionBarActivity
                         }
                     }
                 }).show();
+    }
+
+    private void setListViewVisible(boolean isVisible) {
+        if (isVisible) {
+            pb.setVisibility(View.GONE);
+            viewListContainer.setVisibility(View.VISIBLE);
+        } else {
+            pb.setVisibility(View.VISIBLE);
+            viewListContainer.setVisibility(View.INVISIBLE);
+        }
     }
 
 
