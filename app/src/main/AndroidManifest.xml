@@ -32,6 +32,7 @@
                 android:value=".app.SmsActivity" />
         </activity>
         <activity
+            android:finishOnTaskLaunch="true"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:parentActivityName=".app.SmsActivity"
             android:name=".app.ListContactActivity"
