@@ -43,7 +43,6 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
                 if (address.startsWith("+84")) {
                     address = address.replace("+84", "0");
                 }
-
                 final boolean ok = addressSet.add(address);
                 if (ok) {
                     SmsObject smsObject = new SmsObject();
@@ -83,8 +82,7 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
             } while (c.moveToNext());
             c.close();
 
-            if (results.isEmpty()) return null;
-            else {
+            if (!results.isEmpty()) {
                 StringBuilder builder = new StringBuilder();
                 int i = 0;
                 for (String s : results) {
