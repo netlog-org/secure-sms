@@ -121,8 +121,7 @@ public class SmsContentActivity extends ActionBarActivity
     protected void onStart() {
         super.onStart();
 
-        pb.setVisibility(View.VISIBLE);
-        listView.setVisibility(View.GONE);
+        setListViewVisible(false);
         mAdapter.clear();
 
         Bundle args = new Bundle();
@@ -256,8 +255,7 @@ public class SmsContentActivity extends ActionBarActivity
         for (SmsContentObject sms : data) {
             mAdapter.add(sms);
         }
-        pb.setVisibility(View.GONE);
-        listView.setVisibility(View.VISIBLE);
+        setListViewVisible(true);
         scrollListViewToBottom();
     }
 
@@ -378,6 +376,16 @@ public class SmsContentActivity extends ActionBarActivity
 
     private void scrollListViewToBottom() {
         listView.setSelection(mAdapter.getCount() - 1);
+    }
+
+    private void setListViewVisible(boolean isVisible) {
+        if (isVisible) {
+            listView.setVisibility(View.VISIBLE);
+            pb.setVisibility(View.GONE);
+        } else {
+            listView.setVisibility(View.INVISIBLE);
+            pb.setVisibility(View.VISIBLE);
+        }
     }
 
     private void sendSms(String msg) {
