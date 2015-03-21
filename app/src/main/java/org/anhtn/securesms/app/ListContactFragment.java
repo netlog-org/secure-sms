@@ -44,6 +44,7 @@ public class ListContactFragment extends ListFragment
         SearchView.OnQueryTextListener {
 
     private ProgressBar pb;
+    private View viewListContainer;
     private ListContactAdapter mAdapter;
     private List<ContactObject> mContactList = new ArrayList<>();
 
@@ -60,7 +61,8 @@ public class ListContactFragment extends ListFragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_list_contact, container, false);
-        pb = (ProgressBar) v.findViewById(android.R.id.progress);
+        pb = (ProgressBar) v.findViewById(R.id.progress);
+        viewListContainer = v.findViewById(R.id.list_container);
         return v;
     }
 
@@ -70,11 +72,11 @@ public class ListContactFragment extends ListFragment
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final ContactObject object = mAdapter.getItem(position);
-                if (object.PhoneNumbers.size() > 1) {
-                    final String[] numbers = new String[object.PhoneNumbers.keySet().size()];
+                final ContactObject c = mAdapter.getItem(position);
+                if (c.PhoneNumbers.size() > 1) {
+                    final String[] numbers = new String[c.PhoneNumbers.keySet().size()];
                     int i = 0;
-                    for (String s : object.PhoneNumbers.keySet()) {
+                    for (String s : c.PhoneNumbers.keySet()) {
                         numbers[i++] = s;
                     }
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -83,20 +85,21 @@ public class ListContactFragment extends ListFragment
                     );
 
                     new AlertDialog.Builder(getActivity())
-                            .setTitle(getString(R.string.choose_phone_number, object.DisplayName))
+                            .setTitle(getString(R.string.choose_phone_number, c.DisplayName))
                             .setCancelable(true)
                             .setNegativeButton(android.R.string.cancel, null)
                             .setAdapter(adapter, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    goToSendMessageActivity(numbers[which], object.DisplayName);
+                                    goToSendMessageActivity(numbers[which], c.DisplayName);
                                 }
                             }).show();
                 } else {
-                    goToSendMessageActivity(object.PrimaryNumber, object.DisplayName);
+                    goToSendMessageActivity(c.PrimaryNumber, c.DisplayName);
                 }
             }
         });
+        getListView().setEmptyView(view.findViewById(R.id.text_list_empty));
     }
 
     @Override
@@ -111,11 +114,9 @@ public class ListContactFragment extends ListFragment
             for (ContactObject object : contactObjects) {
                 mAdapter.add(object);
             }
-            getListView().setVisibility(View.VISIBLE);
-            pb.setVisibility(View.INVISIBLE);
+            setListViewVisible();
         }
         getLoaderManager().initLoader(0, null, this);
-
     }
 
     @Override
@@ -142,8 +143,7 @@ public class ListContactFragment extends ListFragment
     @Override
     public void onLoadFinished(Loader<List<ContactObject>> loader, List<ContactObject> data) {
         if (mAdapter.isEmpty()) {
-            getListView().setVisibility(View.VISIBLE);
-            pb.setVisibility(View.INVISIBLE);
+            setListViewVisible();
             CacheHelper.getInstance().put("contact", data);
         } else  {
             mAdapter.clear();
@@ -192,6 +192,17 @@ public class ListContactFragment extends ListFragment
                     }
                 }
             }
+            if (mAdapter.isEmpty()) {
+                final String text = getResources().getString(R.string.new_sms_to, s);
+                final int index = text.indexOf(s);
+                final SpannableStringBuilder builder = new SpannableStringBuilder(text);
+                applySpannableBlackColorWithBold(builder, index, index + s.length());
+
+                ContactObject contact = new ContactObject();
+                contact.SpannablePrimaryNumber = builder;
+                contact.PrimaryNumber = s;
+                mAdapter.add(contact);
+            }
         } catch (NumberFormatException ex) {
             for (ContactObject contact : mContactList) {
                 if (Global.smartContains(contact.DisplayName.toLowerCase(),
@@ -201,6 +212,11 @@ public class ListContactFragment extends ListFragment
             }
         }
         return false;
+    }
+
+    private void setListViewVisible() {
+        viewListContainer.setVisibility(View.VISIBLE);
+        pb.setVisibility(View.INVISIBLE);
     }
 
     private void goToSendMessageActivity(String phoneNumber, String contactName) {
@@ -241,6 +257,9 @@ public class ListContactFragment extends ListFragment
 
     private static class ListContactAdapter extends ArrayAdapter<ContactObject> {
 
+        private static final int TYPE_NORMAL = 1;
+        private static final int TYPE_EMPTY_VIEW = 2;
+
         public ListContactAdapter(Context context, int resource) {
             super(context, resource);
         }
@@ -248,30 +267,56 @@ public class ListContactFragment extends ListFragment
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
-            if (view == null) {
-                LayoutInflater inflater = (LayoutInflater)
-                        getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(R.layout.view_list_sms_item_1, parent, false);
-            }
-
             final ContactObject object = getItem(position);
-            final TextView txtName = (TextView) view.findViewById(android.R.id.text1);
-            final TextView txtPhone = (TextView) view.findViewById(android.R.id.text2);
-            txtName.setText(object.DisplayName);
 
-            String type = object.PhoneNumbers.get(object.PrimaryNumber);
-            if (type == null) type = "";
-            if (object.SpannablePrimaryNumber != null) {
-                SpannableStringBuilder builder = (SpannableStringBuilder)
-                        object.SpannablePrimaryNumber;
-                builder.append(" ");
-                builder.append(type);
-                txtPhone.setText(builder);
+            if (getItemViewType(position) == TYPE_EMPTY_VIEW) {
+                if (view == null) {
+                    LayoutInflater inflater = (LayoutInflater)
+                            getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    view = inflater.inflate(android.R.layout.simple_list_item_1,
+                            parent, false);
+                }
+                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                textView.setText(object.SpannablePrimaryNumber);
             } else {
-                txtPhone.setText(object.PrimaryNumber + " " + type);
+                if (view == null) {
+                    LayoutInflater inflater = (LayoutInflater)
+                            getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    view = inflater.inflate(R.layout.view_list_sms_item_1, parent, false);
+                }
+
+                final TextView txtName = (TextView) view.findViewById(R.id.text1);
+                final TextView txtPhone = (TextView) view.findViewById(R.id.text2);
+                txtName.setText(object.DisplayName);
+
+                String type = object.PhoneNumbers.get(object.PrimaryNumber);
+                if (type == null) type = "";
+                if (object.SpannablePrimaryNumber != null) {
+                    SpannableStringBuilder builder = (SpannableStringBuilder)
+                            object.SpannablePrimaryNumber;
+                    builder.append(" ");
+                    builder.append(type);
+                    txtPhone.setText(builder);
+                } else {
+                    txtPhone.setText(object.PrimaryNumber + " " + type);
+                }
             }
 
             return view;
+        }
+
+        @Override
+        public int getViewTypeCount() {
+            return 2;
+        }
+
+        @Override
+        public int getItemViewType(int position) {
+            final ContactObject c = getItem(position);
+            if (c.DisplayName == null)
+                return TYPE_EMPTY_VIEW;
+            else
+                return TYPE_NORMAL;
         }
     }
 }

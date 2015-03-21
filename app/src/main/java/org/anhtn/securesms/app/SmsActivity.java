@@ -165,8 +165,8 @@ public class SmsActivity extends ActionBarActivity
                 view = inflater.inflate(R.layout.view_list_sms_item_1, parent, false);
             }
             final SmsObject smsObject = getItem(position);
-            final TextView textFrom = (TextView) view.findViewById(android.R.id.text1);
-            final TextView textContent = (TextView) view.findViewById(android.R.id.text2);
+            final TextView textFrom = (TextView) view.findViewById(R.id.text1);
+            final TextView textContent = (TextView) view.findViewById(R.id.text2);
 
             if (smsObject.AddressInContact != null) {
                 textFrom.setText(smsObject.AddressInContact);

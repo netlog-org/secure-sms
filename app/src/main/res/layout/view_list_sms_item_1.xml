@@ -9,7 +9,7 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@android:id/text1"
+        android:id="@+id/text1"
         android:textSize="18sp"
         android:textColor="@color/gg_grey800"
         android:singleLine="true"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:id="@android:id/text2"
+        android:id="@+id/text2"
         android:textSize="15sp"
         android:textColor="@color/gg_grey600"
         android:singleLine="true"
