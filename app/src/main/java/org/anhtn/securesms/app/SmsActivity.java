@@ -51,6 +51,7 @@ public class SmsActivity extends ActionBarActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_base);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.app_name);
+        getSupportActionBar().setLogo(R.drawable.action_logo);
 
         pb = (ProgressBar) findViewById(R.id.progress);
         viewListContainer = findViewById(R.id.list_container);
