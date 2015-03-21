@@ -55,7 +55,9 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
                             smsObject.AddressInContact = lookupData.get(number);
                         } else {
                             smsObject.AddressInContact = phoneLookup(number);
-                            lookupData.put(number, smsObject.AddressInContact);
+                            if (smsObject.AddressInContact != null) {
+                                lookupData.put(number, smsObject.AddressInContact);
+                            }
                         }
                     } catch (NumberFormatException ignored) {}
                     results.add(smsObject);
