@@ -5,6 +5,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ public class ListContactFragment extends ListFragment
 
     private ProgressBar pb;
     private View viewListContainer;
+    private SearchView searchView;
     private ListContactAdapter mAdapter;
     private List<ContactObject> mContactList = new ArrayList<>();
 
@@ -109,9 +111,8 @@ public class ListContactFragment extends ListFragment
         setHasOptionsMenu(true);
         if (CacheHelper.getInstance().contains("contact")) {
             mAdapter.clear();
-            List<ContactObject> contactObjects = (List<ContactObject>)
-                    CacheHelper.getInstance().get("contact");
-            for (ContactObject object : contactObjects) {
+            mContactList = (List<ContactObject>) CacheHelper.getInstance().get("contact");
+            for (ContactObject object : mContactList) {
                 mAdapter.add(object);
             }
             setListViewVisible();
@@ -128,7 +129,7 @@ public class ListContactFragment extends ListFragment
                 getActivity().getSystemService(Context.SEARCH_SERVICE);
         final MenuItem item = menu.findItem(R.id.action_search);
 
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        searchView = (SearchView) MenuItemCompat.getActionView(item);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(
                 getActivity().getComponentName()));
         searchView.setIconifiedByDefault(false);
@@ -142,16 +143,16 @@ public class ListContactFragment extends ListFragment
 
     @Override
     public void onLoadFinished(Loader<List<ContactObject>> loader, List<ContactObject> data) {
-        if (mAdapter.isEmpty()) {
-            setListViewVisible();
-            CacheHelper.getInstance().put("contact", data);
-        } else  {
-            mAdapter.clear();
-        }
-        for (ContactObject object : data) {
-            mAdapter.add(object);
-        }
         mContactList = data;
+        CacheHelper.getInstance().put("contact", data);
+
+        if (searchView.getQuery().toString().length() == 0) {
+            mAdapter.clear();
+            setListViewVisible();
+            for (ContactObject object : data) {
+                mAdapter.add(object);
+            }
+        }
     }
 
     @Override
@@ -175,39 +176,39 @@ public class ListContactFragment extends ListFragment
         }
         try {
             String keyword = String.valueOf(Long.parseLong(s));
-            for (ContactObject contact : mContactList) {
-                for (String number : contact.PhoneNumbers.keySet()) {
+
+            final String text = getResources().getString(R.string.new_sms_to, s);
+            final int index = text.indexOf(s);
+            final SpannableStringBuilder builder = new SpannableStringBuilder(text);
+            applySpannableBlackColorWithBold(builder, index, index + s.length());
+
+            ContactObject contact = new ContactObject();
+            contact.SpannablePrimaryNumber = builder;
+            contact.PrimaryNumber = s;
+            mAdapter.add(contact);
+
+            for (ContactObject c : mContactList) {
+                for (String number : c.PhoneNumbers.keySet()) {
                     List<Integer> matchedPos = new ArrayList<>();
                     if (Global.smartContains(number, keyword, matchedPos)) {
-                        if (number.equals(contact.PrimaryNumber)) {
+                        if (number.equals(c.PrimaryNumber)) {
                             Integer[] arr = new Integer[matchedPos.size()];
-                            ContactObject clone = new ContactObject(contact);
+                            ContactObject clone = new ContactObject(c);
                             clone.SpannablePrimaryNumber = getSpannableWithBoldInSomeParts(
                                     number, matchedPos.toArray(arr));
                             mAdapter.add(clone);
                         } else {
-                            mAdapter.add(contact);
+                            mAdapter.add(c);
                         }
                         break;
                     }
                 }
             }
-            if (mAdapter.isEmpty()) {
-                final String text = getResources().getString(R.string.new_sms_to, s);
-                final int index = text.indexOf(s);
-                final SpannableStringBuilder builder = new SpannableStringBuilder(text);
-                applySpannableBlackColorWithBold(builder, index, index + s.length());
-
-                ContactObject contact = new ContactObject();
-                contact.SpannablePrimaryNumber = builder;
-                contact.PrimaryNumber = s;
-                mAdapter.add(contact);
-            }
         } catch (NumberFormatException ex) {
-            for (ContactObject contact : mContactList) {
-                if (Global.smartContains(contact.DisplayName.toLowerCase(),
+            for (ContactObject c : mContactList) {
+                if (Global.smartContains(c.DisplayName.toLowerCase(),
                         s.toLowerCase(), null)) {
-                    mAdapter.add(contact);
+                    mAdapter.add(c);
                 }
             }
         }
@@ -257,8 +258,8 @@ public class ListContactFragment extends ListFragment
 
     private static class ListContactAdapter extends ArrayAdapter<ContactObject> {
 
-        private static final int TYPE_NORMAL = 1;
-        private static final int TYPE_EMPTY_VIEW = 2;
+        private static final int TYPE_NORMAL = 0;
+        private static final int TYPE_EMPTY_VIEW = 1;
 
         public ListContactAdapter(Context context, int resource) {
             super(context, resource);
@@ -273,10 +274,9 @@ public class ListContactFragment extends ListFragment
                 if (view == null) {
                     LayoutInflater inflater = (LayoutInflater)
                             getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    view = inflater.inflate(android.R.layout.simple_list_item_1,
-                            parent, false);
+                    view = inflater.inflate(R.layout.view_list_sms_item_3, parent, false);
                 }
-                TextView textView = (TextView) view.findViewById(android.R.id.text1);
+                TextView textView = (TextView) view.findViewById(R.id.text);
                 textView.setText(object.SpannablePrimaryNumber);
             } else {
                 if (view == null) {
