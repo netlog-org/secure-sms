@@ -17,4 +17,5 @@
     <string name="new_sms_to">Tin nhắn mới tới %s</string>
     <string name="no_recent_conversation">Không có cuộc hội thoại nào gần đây</string>
     <string name="version">Phiên bản 1.1</string>
+    <string name="app_name">Secure SMS</string>
 </resources>
