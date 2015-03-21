@@ -8,10 +8,13 @@ import android.provider.ContactsContract;
 import org.anhtn.securesms.model.ContactObject;
 import org.anhtn.securesms.model.SmsObject;
 import org.anhtn.securesms.utils.CacheHelper;
+import org.anhtn.securesms.utils.Country;
+import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
@@ -32,9 +35,8 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
         Set<String> addressSet = new HashSet<>();
         while (c.moveToNext()) {
             String address = c.getString(c.getColumnIndex("address"));
-            if (address.startsWith("+84")) {
-                address = address.replace("+84", "0");
-            }
+            address = PhoneNumberConverterFactory.getConverter(
+                    new Locale("vn", Country.VIETNAM)).toLocal(address);
             final boolean ok = addressSet.add(address);
             if (ok) {
                 SmsObject smsObject = new SmsObject();

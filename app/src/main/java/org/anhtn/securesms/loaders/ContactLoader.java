@@ -8,9 +8,12 @@ import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Contacts;
 
 import org.anhtn.securesms.model.ContactObject;
+import org.anhtn.securesms.utils.Country;
+import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 public class ContactLoader extends SimpleBaseLoader<List<ContactObject>> {
@@ -56,8 +59,9 @@ public class ContactLoader extends SimpleBaseLoader<List<ContactObject>> {
             );
 
             while (c2.moveToNext()) {
-                String phone = c2.getString(c2.getColumnIndex(
-                        CommonDataKinds.Phone.NUMBER)).replace("+84", "0");
+                String phone = c2.getString(c2.getColumnIndex(CommonDataKinds.Phone.NUMBER));
+                phone = PhoneNumberConverterFactory.getConverter(
+                        new Locale("vn", Country.VIETNAM)).toLocal(phone);
                 int type = c2.getInt(c2.getColumnIndex(CommonDataKinds.Phone.TYPE));
                 String typeText = getContext().getResources().getString(
                         CommonDataKinds.Phone.getTypeLabelResource(type));
