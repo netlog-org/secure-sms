@@ -124,6 +124,7 @@ public class SmsActivity extends ActionBarActivity
             mAdapter.add(object);
         }
         setListViewVisible(true);
+        mCache.put("sms", data);
     }
 
     @Override

@@ -268,6 +268,7 @@ public class SmsContentActivity extends ActionBarActivity
     private void showChooseContactDialog() {
         final List<SmsObject> list = (List<SmsObject>)
                 CacheHelper.getInstance().get("sms");
+        if (list == null) return;
         final String[] items = new String[list.size()];
         int i = 0;
         for (SmsObject obj : list) {
@@ -318,8 +319,6 @@ public class SmsContentActivity extends ActionBarActivity
         };
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, items);
-        final List<SmsObject> list = (List<SmsObject>)
-                CacheHelper.getInstance().get("sms");
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.action_add)
@@ -331,9 +330,7 @@ public class SmsContentActivity extends ActionBarActivity
                         if (which == 0) {
                             Intent i = new Intent(SmsContentActivity.this,
                                     ListContactActivity.class);
-                            i.putExtra("content",
-                                    mAdapter.getItem(mCurrentPosLongClick).Content);
-                            i.putExtra("address", list.get(which).Address);
+                            i.putExtra("content",mAdapter.getItem(mCurrentPosLongClick).Content);
                             startActivity(i);
                         } else {
                             showChooseContactDialog();
@@ -358,7 +355,7 @@ public class SmsContentActivity extends ActionBarActivity
         if (address == null) return;
         String where;
         try {
-            address = String.valueOf(Long.parseLong(address.toString()));
+            address = String.valueOf(Long.parseLong(address));
             where = "address like '%" + address + "'";
         } catch (NumberFormatException ex) {
             where = "address='" + address + "'";
