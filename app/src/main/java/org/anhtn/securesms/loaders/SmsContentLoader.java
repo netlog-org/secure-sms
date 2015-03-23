@@ -8,6 +8,7 @@ import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.model.SmsContentObject;
 import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.Global;
+import org.anhtn.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
 import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
 import java.text.DateFormat;
@@ -38,10 +39,10 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
             address = String.valueOf(Long.parseLong(address));
             if (!PhoneNumberConverterFactory.getConverter(
                     new Locale("vn", Country.VIETNAM)).isValidPersonalNumber(address)) {
-                throw new NumberFormatException();
+                throw new NotValidPersonalNumberException();
             }
             selection = "address like '%" + address + "'";
-        } catch (NumberFormatException ex) {
+        } catch (NumberFormatException | NotValidPersonalNumberException ex) {
             selection = "address='" + address + "'";
         }
 
