@@ -34,5 +34,10 @@ public class PhoneNumberConverterFactory {
             phoneNumber = "+84" + phoneNumber;
             return phoneNumber;
         }
+
+        @Override
+        public boolean isValid(String phoneNumber) {
+            return phoneNumber.length() >= 9;
+        }
     }
 }

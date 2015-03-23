@@ -6,12 +6,15 @@ import android.net.Uri;
 
 import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.model.SmsContentObject;
+import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.Global;
+import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
 
@@ -33,8 +36,10 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
         String selection;
         try {
             address = String.valueOf(Long.parseLong(address));
-            if (address.length() < Global.MIN_PHONE_NUMBER_LENGTH)
+            if (PhoneNumberConverterFactory.getConverter(
+                    new Locale("vn", Country.VIETNAM)).isValid(address)) {
                 throw new NumberFormatException();
+            }
             selection = "address like '%" + address + "'";
         } catch (NumberFormatException ex) {
             selection = "address='" + address + "'";
