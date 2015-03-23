@@ -36,7 +36,7 @@ public class PhoneNumberConverterFactory {
         }
 
         @Override
-        public boolean isValid(String phoneNumber) {
+        public boolean isValidPersonalNumber(String phoneNumber) {
             return phoneNumber.length() >= 9;
         }
     }

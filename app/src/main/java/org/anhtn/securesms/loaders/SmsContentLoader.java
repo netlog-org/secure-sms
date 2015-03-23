@@ -37,7 +37,7 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
         try {
             address = String.valueOf(Long.parseLong(address));
             if (PhoneNumberConverterFactory.getConverter(
-                    new Locale("vn", Country.VIETNAM)).isValid(address)) {
+                    new Locale("vn", Country.VIETNAM)).isValidPersonalNumber(address)) {
                 throw new NumberFormatException();
             }
             selection = "address like '%" + address + "'";
