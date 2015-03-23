@@ -398,7 +398,8 @@ public class SmsContentActivity extends ActionBarActivity
             if (!PhoneNumberUtils.isWellFormedSmsAddress(mAddress)) {
                 throw new RuntimeException("Not have well formed sms address");
             }
-            PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(INTENT_SMS_SENT), 0);
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0,
+                    new Intent(INTENT_SMS_SENT), 0);
             SmsManager sms = SmsManager.getDefault();
             sms.sendTextMessage(mAddress, null, msg, pi, null);
             sendBroadcast(new Intent(INTENT_SMS_SENT));
@@ -417,7 +418,7 @@ public class SmsContentActivity extends ActionBarActivity
             sms.Type = SmsContentObject.TYPE_SENT;
 
             String sOk = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
-            String sFail = "Send message failed";
+            String sFail = getString(R.string.send_failed);
             sms.Date = (getResultCode() == RESULT_OK) ? sOk : sFail;
 
             mAdapter.add(sms);
