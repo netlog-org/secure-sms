@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 
 import org.anhtn.securesms.model.ContactObject;
+import org.anhtn.securesms.model.SentMessageModel;
 import org.anhtn.securesms.model.SmsObject;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Country;
@@ -27,7 +28,7 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
     @SuppressWarnings("unchecked")
     public List<SmsObject> loadInBackground() {
         Uri inboxUri = Uri.parse("content://sms/");
-        String[] reqCols = new String[] {"address, body"};
+        String[] reqCols = new String[] {"address", "body", "date"};
         List<SmsObject> results = new ArrayList<>();
 
         Cursor c = getContext().getContentResolver().query(inboxUri, reqCols,
@@ -42,6 +43,7 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
                 SmsObject smsObject = new SmsObject();
                 smsObject.Address = address;
                 smsObject.Content = c.getString(c.getColumnIndex("body"));
+                smsObject.Date = c.getString(c.getColumnIndex("date"));
                 try {
                     String number = String.valueOf(Long.parseLong(address));
                     smsObject.AddressInContact = phoneLookupFromCache(number);
@@ -54,6 +56,17 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
             }
         }
         c.close();
+
+        for (SmsObject smsObject : results) {
+            List<SentMessageModel> models = SentMessageModel.findByAddress(getContext(),
+                    smsObject.Address, "date DESC", "1");
+            if (models.isEmpty()) continue;
+            final SentMessageModel model = models.get(0);
+            if (Long.parseLong(smsObject.Date) < Long.parseLong(model.Date)) {
+                smsObject.Date = model.Date;
+                smsObject.Content = model.Body;
+            }
+        }
 
         return results;
     }

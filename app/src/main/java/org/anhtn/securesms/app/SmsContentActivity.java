@@ -39,6 +39,7 @@ import android.widget.Toast;
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.loaders.SmsContentLoader;
+import org.anhtn.securesms.model.SentMessageModel;
 import org.anhtn.securesms.model.SmsContentObject;
 import org.anhtn.securesms.model.SmsObject;
 import org.anhtn.securesms.utils.CacheHelper;
@@ -66,7 +67,7 @@ public class SmsContentActivity extends ActionBarActivity
     private ProgressBar pb;
     private ListView listView;
     private TextView txtNewSms;
-    private String mAddress, mCurrentMsgToSent;
+    private String mAddress;
     private int mCurrentPosLongClick = -1;
 
     @Override
@@ -95,14 +96,10 @@ public class SmsContentActivity extends ActionBarActivity
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCurrentMsgToSent = txtNewSms.getText().toString();
-                if (mCurrentMsgToSent.length() > 0) {
+                final String text = txtNewSms.getText().toString();
+                if (text.length() > 0) {
                     txtNewSms.setText("");
-                    String cipherText = AESHelper.encryptToBase64(
-                            Global.DEFAULT_PASSWORD, mCurrentMsgToSent);
-                    if (cipherText != null) {
-                        sendSms(Global.MESSAGE_PREFIX + cipherText);
-                    }
+                    sendSms(text);
                 }
             }
         });
@@ -300,6 +297,7 @@ public class SmsContentActivity extends ActionBarActivity
                 }).show();
     }
 
+    @SuppressWarnings("deprecation")
     private void copyToClipboard() {
         if (mCurrentPosLongClick < 0) return;
         String text = mAdapter.getItem(mCurrentPosLongClick).Content;
@@ -344,11 +342,18 @@ public class SmsContentActivity extends ActionBarActivity
     }
 
     private void deleteMessage() {
+        boolean deleteSuccess;
         SmsContentObject sms = mAdapter.getItem(mCurrentPosLongClick);
-        Uri uri = Uri.parse("content://sms/");
-        int ret = getContentResolver().delete(uri, "_id= ?",
-                new String[]{String.valueOf(sms.Id)});
-        if (ret > 0) {
+        if (sms.Type == SmsContentObject.TYPE_ENCRYPTED) {
+            SentMessageModel model = new SentMessageModel();
+            model._Id = sms.Id;
+            deleteSuccess = model.delete(this);
+        } else {
+            Uri uri = Uri.parse("content://sms/");
+            deleteSuccess = getContentResolver().delete(uri, "_id= ?",
+                    new String[]{String.valueOf(sms.Id)}) != -1;
+        }
+        if (deleteSuccess) {
             deleteListViewItem(mCurrentPosLongClick);
         }
     }
@@ -358,6 +363,8 @@ public class SmsContentActivity extends ActionBarActivity
         String address = mAddress;
         if (address == null) return;
         String where;
+        boolean deleteSuccess;
+
         try {
             address = String.valueOf(Long.parseLong(address));
             if (!PhoneNumberConverterFactory.getConverter(
@@ -368,11 +375,12 @@ public class SmsContentActivity extends ActionBarActivity
         } catch (NumberFormatException | NotValidPersonalNumberException ex) {
             where = "address='" + address + "'";
         }
-        if (getContentResolver().delete(uri, where, null) > 0) {
-            finish();
-        } else {
+        deleteSuccess = (getContentResolver().delete(uri, where, null) != -1)
+                && SentMessageModel.deleteByAddress(this, mAddress);
+        if (!deleteSuccess) {
             Toast.makeText(this, R.string.delete_fail, Toast.LENGTH_SHORT).show();
         }
+        finish();
     }
 
     private void deleteListViewItem(int position) {
@@ -394,36 +402,53 @@ public class SmsContentActivity extends ActionBarActivity
     }
 
     private void sendSms(String msg) {
+        String cipherText = AESHelper.encryptToBase64(Global.DEFAULT_PASSWORD, msg);
         try {
-            if (!PhoneNumberUtils.isWellFormedSmsAddress(mAddress)) {
+            if (cipherText == null)
+                throw new NullPointerException();
+            if (!PhoneNumberUtils.isWellFormedSmsAddress(mAddress))
                 throw new RuntimeException("Not have well formed sms address");
-            }
-            PendingIntent pi = PendingIntent.getBroadcast(this, 0,
-                    new Intent(INTENT_SMS_SENT), 0);
-            SmsManager sms = SmsManager.getDefault();
-            sms.sendTextMessage(mAddress, null, msg, pi, null);
+
+            cipherText = Global.MESSAGE_PREFIX + cipherText;
+            Intent i = new Intent(INTENT_SMS_SENT);
+            i.putExtra("raw", msg);
+            i.putExtra("encrypted", cipherText);
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
+            SmsManager.getDefault().sendTextMessage(mAddress, null, cipherText, pi, null);
             sendBroadcast(new Intent(INTENT_SMS_SENT));
         } catch (Exception ex) {
             Global.error("Failed to send sms: " + ex.getMessage());
+            Toast.makeText(this, R.string.send_failed, Toast.LENGTH_SHORT).show();
         }
     }
 
     private BroadcastReceiver mSmsSentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (mCurrentMsgToSent == null) return;
+            final String rawMsg = intent.getStringExtra("raw");
+            final String encryptedMsg = intent.getStringExtra("encrypted");
+            if (rawMsg == null || encryptedMsg == null) return;
 
+            final long currentTimeMillis = System.currentTimeMillis();
             SmsContentObject sms = new SmsContentObject();
-            sms.Content = mCurrentMsgToSent;
+            sms.Content = rawMsg;
             sms.Type = SmsContentObject.TYPE_SENT;
-
-            String sOk = DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
-            String sFail = getString(R.string.send_failed);
-            sms.Date = (getResultCode() == RESULT_OK) ? sOk : sFail;
-
+            sms.Date = (getResultCode() == RESULT_OK)
+                    ? DateFormat.getInstance().format(new Date(currentTimeMillis))
+                    : getString(R.string.send_failed);
             mAdapter.add(sms);
             scrollListViewToBottom();
-            mCurrentMsgToSent = null;
+
+            SentMessageModel model = new SentMessageModel();
+            model.Status = (getResultCode() == RESULT_OK)
+                    ? SentMessageModel.STATUS_SENT_SUCCESS
+                    : SentMessageModel.STATUS_SENT_FAIL;
+            model.Date = String.valueOf(currentTimeMillis);
+            model.Body = encryptedMsg;
+            model.Address = mAddress;
+            if (model.insert(SmsContentActivity.this) == -1) {
+                Global.error("Save sent message to database failed");
+            }
         }
     };
 
@@ -467,7 +492,12 @@ public class SmsContentActivity extends ActionBarActivity
             textContent.setText(sms.Content);
 
             final TextView textDate = (TextView) view.findViewById(R.id.text2);
-            textDate.setText(sms.Date);
+            try {
+                textDate.setText(DateFormat.getInstance().format(
+                        new Date(Long.parseLong(sms.Date))));
+            } catch (Exception ex) {
+                textDate.setText(sms.Date);
+            }
 
             return view;
         }

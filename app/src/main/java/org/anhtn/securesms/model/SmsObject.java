@@ -4,4 +4,5 @@ public class SmsObject {
     public String Address;
     public String AddressInContact;
     public String Content;
+    public String Date;
 }

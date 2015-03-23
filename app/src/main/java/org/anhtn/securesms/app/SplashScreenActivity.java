@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.loaders.ContactLoader;
 import org.anhtn.securesms.model.ContactObject;
+import org.anhtn.securesms.model.DatabaseHandler;
 import org.anhtn.securesms.utils.CacheHelper;
 
 import java.util.List;
@@ -40,6 +41,7 @@ public class SplashScreenActivity extends ActionBarActivity
         if (data != null) {
             CacheHelper.getInstance().put("contact", data);
         }
+        initDatabase();
         startSmsActivity();
     }
 
@@ -52,5 +54,11 @@ public class SplashScreenActivity extends ActionBarActivity
         Intent i = new Intent(SplashScreenActivity.this, SmsActivity.class);
         i.addFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+    }
+
+    private void initDatabase() {
+        DatabaseHandler db = new DatabaseHandler(this);
+        db.getReadableDatabase();
+        db.close();
     }
 }
