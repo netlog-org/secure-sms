@@ -42,11 +42,15 @@ import org.anhtn.securesms.loaders.SmsContentLoader;
 import org.anhtn.securesms.model.SmsContentObject;
 import org.anhtn.securesms.model.SmsObject;
 import org.anhtn.securesms.utils.CacheHelper;
+import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.Global;
+import org.anhtn.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
+import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 
 public class SmsContentActivity extends ActionBarActivity
@@ -356,8 +360,12 @@ public class SmsContentActivity extends ActionBarActivity
         String where;
         try {
             address = String.valueOf(Long.parseLong(address));
+            if (!PhoneNumberConverterFactory.getConverter(
+                    new Locale("vn", Country.VIETNAM)).isValidPersonalNumber(address)) {
+                throw new NotValidPersonalNumberException();
+            }
             where = "address like '%" + address + "'";
-        } catch (NumberFormatException ex) {
+        } catch (NumberFormatException | NotValidPersonalNumberException ex) {
             where = "address='" + address + "'";
         }
         if (getContentResolver().delete(uri, where, null) > 0) {
