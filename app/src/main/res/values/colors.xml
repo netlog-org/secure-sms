@@ -19,9 +19,9 @@
     <color name="gg_grey900">#212121</color>
 
     <color name="flat_button_pressed">#33F0F0F0</color>
-    <color name="flat_button_material_focused">#14999999</color>
-    <color name="flat_button_material_pressed">#28999999</color>
-    <color name="flat_button_material_disabled">#1A000000</color>
+    <color name="button_material_focused">#14999999</color>
+    <color name="button_material_pressed">#28999999</color>
+    <color name="button_material_disabled">#1A000000</color>
 
     <color name="base_toolbal_background">@color/app_background</color>
 </resources>
