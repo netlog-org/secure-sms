@@ -31,23 +31,23 @@ import android.widget.TextView;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.loaders.ContactLoader;
+import org.anhtn.securesms.model.Contact;
 import org.anhtn.securesms.utils.CacheHelper;
-import org.anhtn.securesms.model.ContactObject;
 import org.anhtn.securesms.utils.Global;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ListContactFragment extends ListFragment
-        implements LoaderManager.LoaderCallbacks<List<ContactObject>>,
+public class ContactFragment extends ListFragment
+        implements LoaderManager.LoaderCallbacks<List<Contact>>,
         SearchView.OnQueryTextListener {
 
     private ProgressBar pb;
     private View viewListContainer;
     private SearchView searchView;
     private ListContactAdapter mAdapter;
-    private List<ContactObject> mContactList = new ArrayList<>();
+    private List<Contact> mContactList = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,7 +61,7 @@ public class ListContactFragment extends ListFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_list_contact, container, false);
+        View v =  inflater.inflate(R.layout.fragment_contact, container, false);
         pb = (ProgressBar) v.findViewById(R.id.progress);
         viewListContainer = v.findViewById(R.id.list_container);
         return v;
@@ -73,7 +73,7 @@ public class ListContactFragment extends ListFragment
         getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final ContactObject c = mAdapter.getItem(position);
+                final Contact c = mAdapter.getItem(position);
                 if (c.PhoneNumbers.size() > 1) {
                     final String[] numbers = new String[c.PhoneNumbers.keySet().size()];
                     int i = 0;
@@ -110,8 +110,8 @@ public class ListContactFragment extends ListFragment
         setHasOptionsMenu(true);
         if (CacheHelper.getInstance().contains("contact")) {
             mAdapter.clear();
-            mContactList = (List<ContactObject>) CacheHelper.getInstance().get("contact");
-            for (ContactObject object : mContactList) {
+            mContactList = (List<Contact>) CacheHelper.getInstance().get("contact");
+            for (Contact object : mContactList) {
                 mAdapter.add(object);
             }
             setListViewVisible();
@@ -122,7 +122,7 @@ public class ListContactFragment extends ListFragment
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        inflater.inflate(R.menu.menu_list_contact, menu);
+        inflater.inflate(R.menu.menu_contact, menu);
 
         final SearchManager searchManager = (SearchManager)
                 getActivity().getSystemService(Context.SEARCH_SERVICE);
@@ -136,19 +136,19 @@ public class ListContactFragment extends ListFragment
     }
 
     @Override
-    public Loader<List<ContactObject>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Contact>> onCreateLoader(int id, Bundle args) {
         return new ContactLoader(getActivity());
     }
 
     @Override
-    public void onLoadFinished(Loader<List<ContactObject>> loader, List<ContactObject> data) {
+    public void onLoadFinished(Loader<List<Contact>> loader, List<Contact> data) {
         mContactList = data;
         CacheHelper.getInstance().put("contact", data);
 
         if (searchView.getQuery().toString().length() == 0) {
             mAdapter.clear();
             setListViewVisible();
-            for (ContactObject object : data) {
+            for (Contact object : data) {
                 mAdapter.add(object);
             }
         }
@@ -168,7 +168,7 @@ public class ListContactFragment extends ListFragment
     public boolean onQueryTextChange(String s) {
         mAdapter.clear();
         if (s.length() == 0) {
-            for (ContactObject contact : mContactList) {
+            for (Contact contact : mContactList) {
                 mAdapter.add(contact);
             }
             return false;
@@ -181,18 +181,18 @@ public class ListContactFragment extends ListFragment
             final SpannableStringBuilder builder = new SpannableStringBuilder(text);
             applySpannableBlackColorWithBold(builder, index, index + s.length());
 
-            ContactObject contact = new ContactObject();
+            Contact contact = new Contact();
             contact.SpannablePrimaryNumber = builder;
             contact.PrimaryNumber = s;
             mAdapter.add(contact);
 
-            for (ContactObject c : mContactList) {
+            for (Contact c : mContactList) {
                 for (String number : c.PhoneNumbers.keySet()) {
                     List<Integer> matchedPos = new ArrayList<>();
                     if (Global.smartContains(number, keyword, matchedPos)) {
                         if (number.equals(c.PrimaryNumber)) {
                             Integer[] arr = new Integer[matchedPos.size()];
-                            ContactObject clone = new ContactObject(c);
+                            Contact clone = new Contact(c);
                             clone.SpannablePrimaryNumber = getSpannableWithBoldInSomeParts(
                                     number, matchedPos.toArray(arr));
                             mAdapter.add(clone);
@@ -204,7 +204,7 @@ public class ListContactFragment extends ListFragment
                 }
             }
         } catch (NumberFormatException ex) {
-            for (ContactObject c : mContactList) {
+            for (Contact c : mContactList) {
                 if (Global.smartContains(c.DisplayName.toLowerCase(),
                         s.toLowerCase(), null)) {
                     mAdapter.add(c);
@@ -220,7 +220,7 @@ public class ListContactFragment extends ListFragment
     }
 
     private void goToSendMessageActivity(String phoneNumber, String contactName) {
-        Intent i = new Intent(getActivity(), SmsContentActivity.class);
+        Intent i = new Intent(getActivity(), SmsMessageActivity.class);
         i.putExtra("address", phoneNumber);
         i.putExtra("addressInContact", contactName);
         i.putExtra("content", getActivity().getIntent().getStringExtra("content"));
@@ -255,7 +255,7 @@ public class ListContactFragment extends ListFragment
     }
 
 
-    private static class ListContactAdapter extends ArrayAdapter<ContactObject> {
+    private static class ListContactAdapter extends ArrayAdapter<Contact> {
 
         private static final int TYPE_NORMAL = 0;
         private static final int TYPE_EMPTY_VIEW = 1;
@@ -267,7 +267,7 @@ public class ListContactFragment extends ListFragment
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = convertView;
-            final ContactObject object = getItem(position);
+            final Contact object = getItem(position);
 
             if (getItemViewType(position) == TYPE_EMPTY_VIEW) {
                 if (view == null) {
@@ -311,7 +311,7 @@ public class ListContactFragment extends ListFragment
 
         @Override
         public int getItemViewType(int position) {
-            final ContactObject c = getItem(position);
+            final Contact c = getItem(position);
             if (c.DisplayName == null)
                 return TYPE_EMPTY_VIEW;
             else

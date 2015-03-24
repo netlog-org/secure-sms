@@ -38,10 +38,10 @@ import android.widget.Toast;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.crypto.AESHelper;
-import org.anhtn.securesms.loaders.SmsContentLoader;
+import org.anhtn.securesms.loaders.SmsMessageLoader;
 import org.anhtn.securesms.model.SentMessageModel;
-import org.anhtn.securesms.model.SmsContentObject;
-import org.anhtn.securesms.model.SmsObject;
+import org.anhtn.securesms.model.SmsMessage;
+import org.anhtn.securesms.model.SmsConversation;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.Global;
@@ -54,8 +54,8 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class SmsContentActivity extends ActionBarActivity
-        implements LoaderManager.LoaderCallbacks<List<SmsContentObject>> {
+public class SmsMessageActivity extends ActionBarActivity
+        implements LoaderManager.LoaderCallbacks<List<SmsMessage>> {
 
     private static final String INTENT_SMS_SENT = "org.anhtn.securesms.INTENT_SMS_SENT";
 
@@ -73,7 +73,7 @@ public class SmsContentActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sms_content);
+        setContentView(R.layout.activity_sms_message);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_base);
         setSupportActionBar(toolbar);
@@ -144,13 +144,13 @@ public class SmsContentActivity extends ActionBarActivity
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mSmsSentReceiver);
-        SmsActivity.sLeaveFromChild = true;
+        SmsConversationActivity.sLeaveFromChild = true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_sms_content, menu);
+        getMenuInflater().inflate(R.menu.menu_sms_message, menu);
         return true;
     }
 
@@ -246,14 +246,14 @@ public class SmsContentActivity extends ActionBarActivity
     }
 
     @Override
-    public Loader<List<SmsContentObject>> onCreateLoader(int id, Bundle args) {
-        return new SmsContentLoader(this, args.getString("address"));
+    public Loader<List<SmsMessage>> onCreateLoader(int id, Bundle args) {
+        return new SmsMessageLoader(this, args.getString("address"));
     }
 
     @Override
-    public void onLoadFinished(Loader<List<SmsContentObject>> loader,
-                               List<SmsContentObject> data) {
-        for (SmsContentObject sms : data) {
+    public void onLoadFinished(Loader<List<SmsMessage>> loader,
+                               List<SmsMessage> data) {
+        for (SmsMessage sms : data) {
             mAdapter.add(sms);
         }
         setListViewVisible(true);
@@ -261,18 +261,18 @@ public class SmsContentActivity extends ActionBarActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<List<SmsContentObject>> loader) {
+    public void onLoaderReset(Loader<List<SmsMessage>> loader) {
         Global.log("Sms content loader reset");
     }
 
     @SuppressWarnings("unchecked")
     private void showChooseContactDialog() {
-        final List<SmsObject> list = (List<SmsObject>)
+        final List<SmsConversation> list = (List<SmsConversation>)
                 CacheHelper.getInstance().get("sms");
         if (list == null) return;
         final String[] items = new String[list.size()];
         int i = 0;
-        for (SmsObject obj : list) {
+        for (SmsConversation obj : list) {
             items[i++] = (obj.AddressInContact != null)
                     ? obj.AddressInContact : obj.Address;
         }
@@ -286,9 +286,9 @@ public class SmsContentActivity extends ActionBarActivity
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        SmsContentObject sms = mAdapter.getItem(mCurrentPosLongClick);
-                        Intent i = new Intent(SmsContentActivity.this,
-                                SmsContentActivity.class);
+                        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+                        Intent i = new Intent(SmsMessageActivity.this,
+                                SmsMessageActivity.class);
                         i.putExtra("content", sms.Content);
                         i.putExtra("address", list.get(which).Address);
                         i.putExtra("addressInContact", list.get(which).AddressInContact);
@@ -330,8 +330,8 @@ public class SmsContentActivity extends ActionBarActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            Intent i = new Intent(SmsContentActivity.this,
-                                    ListContactActivity.class);
+                            Intent i = new Intent(SmsMessageActivity.this,
+                                    ContactActivity.class);
                             i.putExtra("content",mAdapter.getItem(mCurrentPosLongClick).Content);
                             startActivity(i);
                         } else {
@@ -343,8 +343,8 @@ public class SmsContentActivity extends ActionBarActivity
 
     private void deleteMessage() {
         boolean deleteSuccess;
-        SmsContentObject sms = mAdapter.getItem(mCurrentPosLongClick);
-        if (sms.Type == SmsContentObject.TYPE_ENCRYPTED) {
+        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+        if (sms.Type == SmsMessage.TYPE_ENCRYPTED) {
             SentMessageModel model = new SentMessageModel();
             model._Id = sms.Id;
             deleteSuccess = model.delete(this);
@@ -430,9 +430,9 @@ public class SmsContentActivity extends ActionBarActivity
             if (rawMsg == null || encryptedMsg == null) return;
 
             final long currentTimeMillis = System.currentTimeMillis();
-            SmsContentObject sms = new SmsContentObject();
+            SmsMessage sms = new SmsMessage();
             sms.Content = rawMsg;
-            sms.Type = SmsContentObject.TYPE_SENT;
+            sms.Type = SmsMessage.TYPE_SENT;
             sms.Date = (getResultCode() == RESULT_OK)
                     ? DateFormat.getInstance().format(new Date(currentTimeMillis))
                     : getString(R.string.send_failed);
@@ -446,14 +446,14 @@ public class SmsContentActivity extends ActionBarActivity
             model.Date = String.valueOf(currentTimeMillis);
             model.Body = encryptedMsg;
             model.Address = mAddress;
-            if (model.insert(SmsContentActivity.this) == -1) {
+            if (model.insert(SmsMessageActivity.this) == -1) {
                 Global.error("Save sent message to database failed");
             }
         }
     };
 
 
-    private static class SmsListAdapter extends ArrayAdapter<SmsContentObject> {
+    private static class SmsListAdapter extends ArrayAdapter<SmsMessage> {
 
         public SmsListAdapter(Context context, int resource) {
             super(context, resource);
@@ -468,12 +468,12 @@ public class SmsContentActivity extends ActionBarActivity
                 view = inflater.inflate(R.layout.view_list_sms_item_2, parent, false);
             }
 
-            final SmsContentObject sms = getItem(position);
+            final SmsMessage sms = getItem(position);
             LinearLayout container = (LinearLayout) view.findViewById(R.id.container);
             FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)
                     container.getLayoutParams();
 
-            if (sms.Type == SmsContentObject.TYPE_INBOX) {
+            if (sms.Type == SmsMessage.TYPE_INBOX) {
                 params.leftMargin = getContext().getResources()
                         .getDimensionPixelSize(R.dimen.message_item_small_margin);
                 params.rightMargin = getContext().getResources()

@@ -1,6 +1,6 @@
 package org.anhtn.securesms.model;
 
-public class SmsContentObject {
+public class SmsMessage {
 
     public static final int TYPE_INBOX = 1;
     public static final int TYPE_SENT = 2;

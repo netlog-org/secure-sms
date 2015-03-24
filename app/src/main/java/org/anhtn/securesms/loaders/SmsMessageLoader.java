@@ -6,7 +6,7 @@ import android.net.Uri;
 
 import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.model.SentMessageModel;
-import org.anhtn.securesms.model.SmsContentObject;
+import org.anhtn.securesms.model.SmsMessage;
 import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.Global;
 import org.anhtn.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
@@ -16,20 +16,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
+public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
 
     private String mAddress;
 
-    public SmsContentLoader(Context context, String address) {
+    public SmsMessageLoader(Context context, String address) {
         super(context);
         mAddress = address;
     }
 
     @Override
-    public List<SmsContentObject> loadInBackground() {
+    public List<SmsMessage> loadInBackground() {
         Uri uri = Uri.parse("content://sms/");
         String[] reqCols = new String[]{"_id", "body", "date", "type"};
-        final List<SmsContentObject> results = new ArrayList<>();
+        final List<SmsMessage> results = new ArrayList<>();
 
         String address = mAddress;
         if (address == null) return null;
@@ -51,8 +51,8 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
 
         int i = 0;
         if (c.moveToFirst() && !models.isEmpty()) {
-            SmsContentObject obj1 = parseFromCursor(c);
-            SmsContentObject obj2 = parseFromModel(models.get(0));
+            SmsMessage obj1 = parseFromCursor(c);
+            SmsMessage obj2 = parseFromModel(models.get(0));
 
             while (true) {
                 if (Long.parseLong(obj1.Date) <= Long.parseLong(obj2.Date)) {
@@ -81,12 +81,12 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
         return results;
     }
 
-    private SmsContentObject parseFromCursor(Cursor c) {
-        SmsContentObject sms = new SmsContentObject();
+    private SmsMessage parseFromCursor(Cursor c) {
+        SmsMessage sms = new SmsMessage();
         sms.Type = c.getInt(c.getColumnIndex("type"));
         sms.Id = c.getInt(c.getColumnIndex("_id"));
-        if (sms.Type != SmsContentObject.TYPE_INBOX
-                && sms.Type != SmsContentObject.TYPE_SENT) {
+        if (sms.Type != SmsMessage.TYPE_INBOX
+                && sms.Type != SmsMessage.TYPE_SENT) {
 
             Global.log("Ignore sms type: " + sms.Type);
             return null;
@@ -106,9 +106,9 @@ public class SmsContentLoader extends SimpleBaseLoader<List<SmsContentObject>> {
         return null;
     }
 
-    private SmsContentObject parseFromModel(SentMessageModel model) {
-        SmsContentObject sms = new SmsContentObject();
-        sms.Type = SmsContentObject.TYPE_ENCRYPTED;
+    private SmsMessage parseFromModel(SentMessageModel model) {
+        SmsMessage sms = new SmsMessage();
+        sms.Type = SmsMessage.TYPE_ENCRYPTED;
         sms.Id = (int) model._Id;
         sms.Date = model.Date;
         sms.Content = AESHelper.decryptFromBase64(Global.DEFAULT_PASSWORD,

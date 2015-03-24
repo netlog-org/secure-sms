@@ -9,7 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.loaders.ContactLoader;
-import org.anhtn.securesms.model.ContactObject;
+import org.anhtn.securesms.model.Contact;
 import org.anhtn.securesms.model.DatabaseHandler;
 import org.anhtn.securesms.utils.CacheHelper;
 
@@ -17,7 +17,7 @@ import java.util.List;
 
 
 public class SplashScreenActivity extends ActionBarActivity
-        implements LoaderManager.LoaderCallbacks<List<ContactObject>> {
+        implements LoaderManager.LoaderCallbacks<List<Contact>> {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +32,12 @@ public class SplashScreenActivity extends ActionBarActivity
     }
 
     @Override
-    public Loader<List<ContactObject>> onCreateLoader(int id, Bundle args) {
+    public Loader<List<Contact>> onCreateLoader(int id, Bundle args) {
         return new ContactLoader(this);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<ContactObject>> loader, List<ContactObject> data) {
+    public void onLoadFinished(Loader<List<Contact>> loader, List<Contact> data) {
         if (data != null) {
             CacheHelper.getInstance().put("contact", data);
         }
@@ -46,12 +46,12 @@ public class SplashScreenActivity extends ActionBarActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<List<ContactObject>> loader) {
+    public void onLoaderReset(Loader<List<Contact>> loader) {
 
     }
 
     private void startSmsActivity() {
-        Intent i = new Intent(SplashScreenActivity.this, SmsActivity.class);
+        Intent i = new Intent(SplashScreenActivity.this, SmsConversationActivity.class);
         i.addFlags(IntentCompat.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
     }

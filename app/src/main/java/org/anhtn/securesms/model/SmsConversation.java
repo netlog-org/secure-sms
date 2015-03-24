@@ -1,6 +1,6 @@
 package org.anhtn.securesms.model;
 
-public class SmsObject {
+public class SmsConversation {
     public String Address;
     public String AddressInContact;
     public String Content;

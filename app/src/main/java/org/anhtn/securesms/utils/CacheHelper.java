@@ -1,11 +1,10 @@
 package org.anhtn.securesms.utils;
 
 import java.util.Hashtable;
-import java.util.Objects;
 
 public class CacheHelper {
 
-    public static CacheHelper getInstance() {
+    public synchronized static CacheHelper getInstance() {
         if (sInstance == null) {
             sInstance = new CacheHelper();
         }
@@ -18,23 +17,15 @@ public class CacheHelper {
 
     private CacheHelper() {}
 
-    public synchronized boolean contains(String key) {
+    public boolean contains(String key) {
         return mData.containsKey(key);
     }
 
-    public synchronized void put(String key, Object data) {
+    public void put(String key, Object data) {
         mData.put(key, data);
     }
 
-    public synchronized Object get(String key) {
+    public Object get(String key) {
         return mData.get(key);
-    }
-
-    public synchronized void remove(String key) {
-        mData.remove(key);
-    }
-
-    public synchronized void clearCache() {
-        mData.clear();
     }
 }

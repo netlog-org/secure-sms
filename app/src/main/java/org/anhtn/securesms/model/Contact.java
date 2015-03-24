@@ -3,17 +3,17 @@ package org.anhtn.securesms.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContactObject {
+public class Contact {
     public String DisplayName;
     public String PrimaryNumber;
     public CharSequence SpannablePrimaryNumber;
     public Map<String, String> PhoneNumbers = new HashMap<>();
 
-    public ContactObject() {
+    public Contact() {
 
     }
 
-    public ContactObject(ContactObject o) {
+    public Contact(Contact o) {
         DisplayName = o.DisplayName;
         PrimaryNumber = o.PrimaryNumber;
         PhoneNumbers = o.PhoneNumbers;

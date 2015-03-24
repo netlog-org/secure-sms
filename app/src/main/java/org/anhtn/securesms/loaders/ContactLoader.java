@@ -7,7 +7,7 @@ import android.os.Build;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Contacts;
 
-import org.anhtn.securesms.model.ContactObject;
+import org.anhtn.securesms.model.Contact;
 import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
@@ -16,15 +16,15 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class ContactLoader extends SimpleBaseLoader<List<ContactObject>> {
+public class ContactLoader extends SimpleBaseLoader<List<Contact>> {
 
     public ContactLoader(Context context) {
         super(context);
     }
 
     @Override
-    public List<ContactObject> loadInBackground() {
-        List<ContactObject> results = new ArrayList<>();
+    public List<Contact> loadInBackground() {
+        List<Contact> results = new ArrayList<>();
         final Uri uri = Contacts.CONTENT_URI;
 
         final String displayName = (
@@ -43,7 +43,7 @@ public class ContactLoader extends SimpleBaseLoader<List<ContactObject>> {
             if (c1.getInt(c1.getColumnIndex(Contacts.HAS_PHONE_NUMBER)) == 0) {
                 continue;
             }
-            ContactObject object = new ContactObject();
+            Contact object = new Contact();
             object.DisplayName = c1.getString(c1.getColumnIndex(displayName));
 
             String lookUpKey = c1.getString(c1.getColumnIndex(Contacts.LOOKUP_KEY));

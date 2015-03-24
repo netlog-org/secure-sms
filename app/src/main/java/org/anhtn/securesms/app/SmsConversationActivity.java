@@ -23,22 +23,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
-import org.anhtn.securesms.loaders.SmsLoader;
-import org.anhtn.securesms.model.SmsObject;
+import org.anhtn.securesms.loaders.SmsConversationLoader;
+import org.anhtn.securesms.model.SmsConversation;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
 
 import java.util.List;
 
 
-public class SmsActivity extends ActionBarActivity
-        implements LoaderManager.LoaderCallbacks<List<SmsObject>>{
+public class SmsConversationActivity extends ActionBarActivity
+        implements LoaderManager.LoaderCallbacks<List<SmsConversation>>{
 
     public static boolean sLeaveFromChild = false;
 
     private SmsListAdapter mAdapter;
     private ProgressBar pb;
-    private ListView listView;
     private View viewListContainer;
 
     private CacheHelper mCache = CacheHelper.getInstance();
@@ -46,7 +45,7 @@ public class SmsActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sms);
+        setContentView(R.layout.activity_sms_conversation);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_base);
         setSupportActionBar(toolbar);
@@ -57,14 +56,14 @@ public class SmsActivity extends ActionBarActivity
         viewListContainer = findViewById(R.id.list_container);
 
         mAdapter = new SmsListAdapter(this, R.layout.view_list_sms_item_1);
-        listView = (ListView) findViewById(R.id.list);
+        final ListView listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(SmsActivity.this, SmsContentActivity.class);
-                final SmsObject smsObject = mAdapter.getItem(position);
-                i.putExtra("address", smsObject.Address);
-                i.putExtra("addressInContact", smsObject.AddressInContact);
+                Intent i = new Intent(SmsConversationActivity.this, SmsMessageActivity.class);
+                final SmsConversation conversation = mAdapter.getItem(position);
+                i.putExtra("address", conversation.Address);
+                i.putExtra("addressInContact", conversation.AddressInContact);
                 startActivity(i);
             }
         });
@@ -92,7 +91,7 @@ public class SmsActivity extends ActionBarActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_sms_conversation, menu);
         return true;
     }
 
@@ -105,7 +104,7 @@ public class SmsActivity extends ActionBarActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_add) {
-            Intent i = new Intent(this, ListContactActivity.class);
+            Intent i = new Intent(this, ContactActivity.class);
             startActivity(i);
             return true;
         }
@@ -114,13 +113,14 @@ public class SmsActivity extends ActionBarActivity
     }
 
     @Override
-    public Loader<List<SmsObject>> onCreateLoader(int id, Bundle args) {
-        return new SmsLoader(this);
+    public Loader<List<SmsConversation>> onCreateLoader(int id, Bundle args) {
+        return new SmsConversationLoader(this);
     }
 
     @Override
-    public void onLoadFinished(Loader<List<SmsObject>> loader, List<SmsObject> data) {
-        for (SmsObject object : data) {
+    public void onLoadFinished(Loader<List<SmsConversation>> loader,
+                               List<SmsConversation> data) {
+        for (SmsConversation object : data) {
             mAdapter.add(object);
         }
         setListViewVisible(true);
@@ -128,11 +128,12 @@ public class SmsActivity extends ActionBarActivity
     }
 
     @Override
-    public void onLoaderReset(Loader<List<SmsObject>> loader) {
+    public void onLoaderReset(Loader<List<SmsConversation>> loader) {
         Global.log("Sms loader reset");
     }
 
     @SuppressLint("InflateParams")
+    @SuppressWarnings("unused")
     private void showInputPasswordDialog() {
         View container = getLayoutInflater().inflate(R.layout.view_dialog_password, null);
         final EditText input = (EditText) container.findViewById(android.R.id.edit);
@@ -163,7 +164,7 @@ public class SmsActivity extends ActionBarActivity
     }
 
 
-    private static class SmsListAdapter extends ArrayAdapter<SmsObject> {
+    private static class SmsListAdapter extends ArrayAdapter<SmsConversation> {
 
         public SmsListAdapter(Context context, int resource) {
             super(context, resource);
@@ -177,16 +178,16 @@ public class SmsActivity extends ActionBarActivity
                         getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.view_list_sms_item_1, parent, false);
             }
-            final SmsObject smsObject = getItem(position);
+            final SmsConversation conversation = getItem(position);
             final TextView textFrom = (TextView) view.findViewById(R.id.text1);
             final TextView textContent = (TextView) view.findViewById(R.id.text2);
 
-            if (smsObject.AddressInContact != null) {
-                textFrom.setText(smsObject.AddressInContact);
+            if (conversation.AddressInContact != null) {
+                textFrom.setText(conversation.AddressInContact);
             } else {
-                textFrom.setText(smsObject.Address);
+                textFrom.setText(conversation.Address);
             }
-            textContent.setText(smsObject.Content);
+            textContent.setText(conversation.Content);
 
             return view;
         }

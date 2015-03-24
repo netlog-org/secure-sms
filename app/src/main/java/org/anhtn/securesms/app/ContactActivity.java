@@ -6,12 +6,12 @@ import android.support.v7.widget.Toolbar;
 
 import org.anhtn.securesms.R;
 
-public class ListContactActivity extends ActionBarActivity {
+public class ContactActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_contact);
+        setContentView(R.layout.activity_contact);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_base);
         setSupportActionBar(toolbar);

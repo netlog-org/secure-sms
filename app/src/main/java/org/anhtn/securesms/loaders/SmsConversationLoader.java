@@ -5,9 +5,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
-import org.anhtn.securesms.model.ContactObject;
+import org.anhtn.securesms.model.Contact;
 import org.anhtn.securesms.model.SentMessageModel;
-import org.anhtn.securesms.model.SmsObject;
+import org.anhtn.securesms.model.SmsConversation;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
@@ -18,18 +18,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
+public class SmsConversationLoader extends SimpleBaseLoader<List<SmsConversation>> {
 
-    public SmsLoader(Context context) {
+    public SmsConversationLoader(Context context) {
         super(context);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public List<SmsObject> loadInBackground() {
+    public List<SmsConversation> loadInBackground() {
         Uri inboxUri = Uri.parse("content://sms/");
         String[] reqCols = new String[] {"address", "body", "date"};
-        List<SmsObject> results = new ArrayList<>();
+        List<SmsConversation> results = new ArrayList<>();
 
         Cursor c = getContext().getContentResolver().query(inboxUri, reqCols,
                 null, null, "date DESC");
@@ -40,31 +40,31 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
                     new Locale("vn", Country.VIETNAM)).toLocal(address);
             final boolean ok = addressSet.add(address);
             if (ok) {
-                SmsObject smsObject = new SmsObject();
-                smsObject.Address = address;
-                smsObject.Content = c.getString(c.getColumnIndex("body"));
-                smsObject.Date = c.getString(c.getColumnIndex("date"));
+                SmsConversation conversation = new SmsConversation();
+                conversation.Address = address;
+                conversation.Content = c.getString(c.getColumnIndex("body"));
+                conversation.Date = c.getString(c.getColumnIndex("date"));
                 try {
                     String number = String.valueOf(Long.parseLong(address));
-                    smsObject.AddressInContact = phoneLookupFromCache(number);
-                    if (smsObject.AddressInContact == null) {
-                        smsObject.AddressInContact = phoneLookup(number);
+                    conversation.AddressInContact = phoneLookupFromCache(number);
+                    if (conversation.AddressInContact == null) {
+                        conversation.AddressInContact = phoneLookup(number);
                     }
                 } catch (NumberFormatException ignored) {
                 }
-                results.add(smsObject);
+                results.add(conversation);
             }
         }
         c.close();
 
-        for (SmsObject smsObject : results) {
+        for (SmsConversation conversation : results) {
             List<SentMessageModel> models = SentMessageModel.findByAddress(getContext(),
-                    smsObject.Address, "date DESC", "1");
+                    conversation.Address, "date DESC", "1");
             if (models.isEmpty()) continue;
             final SentMessageModel model = models.get(0);
-            if (Long.parseLong(smsObject.Date) < Long.parseLong(model.Date)) {
-                smsObject.Date = model.Date;
-                smsObject.Content = model.Body;
+            if (Long.parseLong(conversation.Date) < Long.parseLong(model.Date)) {
+                conversation.Date = model.Date;
+                conversation.Content = model.Body;
             }
         }
 
@@ -101,9 +101,9 @@ public class SmsLoader extends SimpleBaseLoader<List<SmsObject>> {
     @SuppressWarnings("unchecked")
     private String phoneLookupFromCache(String number) {
         if (!CacheHelper.getInstance().contains("contact")) return null;
-        List<ContactObject> list = (List<ContactObject>)
+        List<Contact> list = (List<Contact>)
                 CacheHelper.getInstance().get("contact");
-        for (ContactObject contact : list) {
+        for (Contact contact : list) {
             Set<String> results = new HashSet<>();
             for (String phoneNumber : contact.PhoneNumbers.keySet()) {
                 if (phoneNumber.equals(number)) {
