@@ -6,8 +6,8 @@ import java.util.List;
 
 public class Global {
 
-    public static final String DEFAULT_PASSPHRASE = "securesms";
-    public static final String MESSAGE_PREFIX = "AES-128 ";
+    public static final String DEFAULT_PASSPHRASE = "%1q2W3e4R5ta@_[}&#";
+    public static final String MESSAGE_PREFIX = "$]";
     public static final String APP_PASSPHRASE_KEY = "app.passphrase";
 
     public static boolean smartContains(String s1, String s2, List<Integer> matchedPos) {
