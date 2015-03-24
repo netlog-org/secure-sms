@@ -1,0 +1,16 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="org.anhtn.securesms.setting.SettingWithFragmentActivity">
+
+    <include layout="@layout/view_toolbar_base" />
+
+    <fragment
+        android:name="org.anhtn.securesms.setting.SettingFragment"
+        android:tag="setting"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</RelativeLayout>

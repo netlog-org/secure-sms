@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -25,6 +26,8 @@ import android.widget.TextView;
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.loaders.SmsConversationLoader;
 import org.anhtn.securesms.model.SmsConversation;
+import org.anhtn.securesms.setting.SettingActivity;
+import org.anhtn.securesms.setting.SettingWithFragmentActivity;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
 
@@ -103,9 +106,14 @@ public class SmsConversationActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_add) {
-            Intent i = new Intent(this, ContactActivity.class);
-            startActivity(i);
+        if (id == R.id.action_setting) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                Intent i = new Intent(this, SettingWithFragmentActivity.class);
+                startActivity(i);
+            } else {
+                Intent i = new Intent(this, SettingActivity.class);
+                startActivity(i);
+            }
             return true;
         }
 

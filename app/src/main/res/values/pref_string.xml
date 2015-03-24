@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_save_sent_message_title">Save sent message</string>
+    <string name="pref_save_sent_message_summary">All sent message will be saved</string>
+    <string name="pref_advanced">Advanced</string>
+    <string name="pref_use_password_title">Use password</string>
+    <string name="pref_use_password_summary">
+        Enable this option will cause you to provide a password each time you run the application.
+    </string>
+    <string name="pref_change_password_summary">
+        The password prevents other individuals can change the your settings on this application.
+    </string>
+    <string name="pref_change_password_title">Change password</string>
+    <string name="pref_change_passphrase_title">Change passphrase</string>
+    <string name="pref_change_passphrase_summary">
+        The passphrase that use to encrypt/decrypt message for each address
+    </string>
+</resources>

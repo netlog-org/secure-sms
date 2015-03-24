@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="save_sent_message"
+        android:summary="@string/pref_save_sent_message_summary"
+        android:title="@string/pref_save_sent_message_title" />
+
+    <PreferenceCategory android:title="@string/pref_advanced" >
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="use_password"
+            android:summary="@string/pref_use_password_summary"
+            android:title="@string/pref_use_password_title" />
+
+        <Preference
+            android:title="@string/pref_change_password_title"
+            android:dependency="use_password"
+            android:summary="@string/pref_change_password_summary"
+            android:key="use_password" />
+
+        <Preference
+            android:title="@string/pref_change_passphrase_title"
+            android:summary="@string/pref_change_passphrase_summary"
+            android:key="change_passphrase" />
+    </PreferenceCategory>
+</PreferenceScreen>

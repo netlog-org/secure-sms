@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_save_sent_message_title">Lưu các tin đã gửi</string>
+    <string name="pref_save_sent_message_summary">Tất cả tin nhắn đã gửi sẽ được lưu lại</string>
+    <string name="pref_advanced">Nâng cao</string>
+    <string name="pref_use_password_title">Sử dụng mật khẩu</string>
+    <string name="pref_use_password_summary">
+        Bật tùy chọn này sẽ khiến bạn phải cung cấp một mật khẩu mỗi lần chạy ứng dụng
+    </string>
+    <string name="pref_change_password_summary">
+        Mật khẩu sẽ ngăn chặn những người khác có thể thay đổi các thiết lập của ban trong ứng dụng này
+    </string>
+    <string name="pref_change_password_title">Đổi mật khẩu</string>
+    <string name="pref_change_pasphrase_title">Đổi mật khẩu mã hóa</string>
+    <string name="pref_change_passphrase_summary">
+        Mật khẩu mã hóa được sử dụng để mã hóa/giải mã các tin nhắn với mỗi địa chỉ
+    </string>
+    <string name="pref_change_passphrase_title">Đổi mật khẩu mã hóa</string>
+</resources>

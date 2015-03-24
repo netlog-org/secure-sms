@@ -53,6 +53,21 @@
             android:name=".app.ChangePassphraseActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name=".setting.SettingActivity"
+            android:label="@string/app_name" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".app.SmsConversationActivity" />
+        </activity>
+        <activity
+            android:parentActivityName=".app.SmsConversationActivity"
+            android:name=".setting.SettingWithFragmentActivity"
+            android:label="@string/app_name" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".app.SmsConversationActivity" />
+        </activity>
 
         <service
             android:name=".services.UpdatePassphraseService"
