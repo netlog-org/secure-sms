@@ -11,4 +11,18 @@
         <item name="android:colorForegroundInverse">@android:color/white</item>
     </style>
 
+    <style name="edit_change_passphrase">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:inputType">textPassword</item>
+        <item name="android:background">@drawable/edit_text_bg_radius</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/gg_grey900</item>
+        <item name="android:textColorHint">@color/gg_grey500</item>
+        <item name="android:layout_marginTop">@dimen/activity_vertical_margin</item>
+    </style>
+
 </resources>

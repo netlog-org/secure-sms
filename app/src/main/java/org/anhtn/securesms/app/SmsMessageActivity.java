@@ -192,6 +192,22 @@ public class SmsMessageActivity extends ActionBarActivity
             startActivity(intent);
             return true;
         }
+        else if (id == R.id.action_change_passphrase) {
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.change_passphrase_warning)
+                    .setCancelable(false)
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            Intent i = new Intent(SmsMessageActivity.this,
+                                    ChangePassphraseActivity.class);
+                            i.putExtra("app_passphrase", Global.DEFAULT_PASSPHRASE);
+                            i.putExtra("address", mAddress);
+                            startActivityForResult(i, ChangePassphraseActivity.REQUEST_CODE);
+                        }
+                    }).show();
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -247,7 +263,8 @@ public class SmsMessageActivity extends ActionBarActivity
 
     @Override
     public Loader<List<SmsMessage>> onCreateLoader(int id, Bundle args) {
-        return new SmsMessageLoader(this, args.getString("address"));
+        return new SmsMessageLoader(this, args.getString("address"),
+                Global.DEFAULT_PASSPHRASE);
     }
 
     @Override
@@ -402,7 +419,7 @@ public class SmsMessageActivity extends ActionBarActivity
     }
 
     private void sendSms(String msg) {
-        String cipherText = AESHelper.encryptToBase64(Global.DEFAULT_PASSWORD, msg);
+        String cipherText = AESHelper.encryptToBase64(Global.DEFAULT_PASSPHRASE, msg);
         try {
             if (cipherText == null)
                 throw new NullPointerException();

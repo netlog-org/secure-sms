@@ -146,7 +146,7 @@ public class SmsConversationActivity extends ActionBarActivity
                 .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (!Global.DEFAULT_PASSWORD.equals(input.getText().toString())) {
+                        if (!Global.DEFAULT_PASSPHRASE.equals(input.getText().toString())) {
                             showInputPasswordDialog();
                         }
                     }

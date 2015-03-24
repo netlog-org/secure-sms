@@ -22,4 +22,10 @@
         android:title="@string/add_contact"
         android:orderInCategory="100"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_change_passphrase"
+        android:title="@string/change_passphrase"
+        android:orderInCategory="100"
+        app:showAsAction="never" />
 </menu>

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import org.anhtn.securesms.crypto.AESHelper;
+import org.anhtn.securesms.model.PassphraseModel;
 import org.anhtn.securesms.model.SentMessageModel;
 import org.anhtn.securesms.model.SmsMessage;
 import org.anhtn.securesms.utils.Country;
@@ -19,10 +20,19 @@ import java.util.Locale;
 public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
 
     private String mAddress;
+    private String mPassphrase;
 
-    public SmsMessageLoader(Context context, String address) {
+    public SmsMessageLoader(Context context, String address, String appPassphrase) {
         super(context);
         mAddress = address;
+
+        PassphraseModel model = PassphraseModel.findByAddress(context, address);
+        if (model != null) {
+            mPassphrase = AESHelper.decryptFromBase64(appPassphrase,
+                    model.Passphrase.replace(Global.MESSAGE_PREFIX, ""));
+        } else {
+            mPassphrase = Global.DEFAULT_PASSPHRASE;
+        }
     }
 
     @Override
@@ -45,9 +55,10 @@ public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
             selection = "address='" + address + "'";
         }
 
-        Cursor c = getContext().getContentResolver().query(uri, reqCols, selection,
-                null, "date ASC");
-        List<SentMessageModel> models = SentMessageModel.findByAddress(getContext(), mAddress);
+        Cursor c = getContext().getContentResolver().query(uri, reqCols,
+                selection, null, "date ASC");
+        List<SentMessageModel> models = SentMessageModel.findByAddress(
+                getContext(), mAddress);
 
         int i = 0;
         if (c.moveToFirst() && !models.isEmpty()) {
@@ -55,6 +66,11 @@ public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
             SmsMessage obj2 = parseFromModel(models.get(0));
 
             while (true) {
+                while (obj1 == null) {
+                    if (!c.moveToNext()) break;
+                    obj1 = parseFromCursor(c);
+                }
+                assert obj1 != null;
                 if (Long.parseLong(obj1.Date) <= Long.parseLong(obj2.Date)) {
                     results.add(obj1);
                     if (!c.moveToNext()) break;
@@ -91,19 +107,14 @@ public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
             Global.log("Ignore sms type: " + sms.Type);
             return null;
         }
-        try {
-            sms.Date = c.getString(c.getColumnIndex("date"));
-            String content = c.getString(c.getColumnIndex("body"));
-            if (content.startsWith(Global.MESSAGE_PREFIX)) {
-                content = content.replace(Global.MESSAGE_PREFIX, "");
-                content = AESHelper.decryptFromBase64(Global.DEFAULT_PASSWORD, content);
-                if (content == null) throw new NullPointerException();
-            }
-            sms.Content = content;
-            return sms;
-        } catch (NumberFormatException | NullPointerException ignored) {
+        sms.Date = c.getString(c.getColumnIndex("date"));
+        String content = c.getString(c.getColumnIndex("body"));
+        if (content.startsWith(Global.MESSAGE_PREFIX)) {
+            content = AESHelper.decryptFromBase64(mPassphrase,
+                    content.replace(Global.MESSAGE_PREFIX, ""));
         }
-        return null;
+        sms.Content = content;
+        return sms;
     }
 
     private SmsMessage parseFromModel(SentMessageModel model) {
@@ -111,7 +122,7 @@ public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
         sms.Type = SmsMessage.TYPE_ENCRYPTED;
         sms.Id = (int) model._Id;
         sms.Date = model.Date;
-        sms.Content = AESHelper.decryptFromBase64(Global.DEFAULT_PASSWORD,
+        sms.Content = AESHelper.decryptFromBase64(mPassphrase,
                 model.Body.replace(Global.MESSAGE_PREFIX, ""));
         return sms;
     }

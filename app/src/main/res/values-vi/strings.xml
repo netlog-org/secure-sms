@@ -3,7 +3,7 @@
     <string name="action_add">Tin nhắn mới</string>
     <string name="action_settings">Cài đặt</string>
     <string name="search_hint">Nhập tên hoặc số điện thoại</string>
-    <string name="choose_phone_number">Gửi tin nhắn tới %s qua</string>
+    <string name="choose_phone_number">Chọn số điện thoại của %s</string>
     <string name="call">Gọi</string>
     <string name="delete">Xóa</string>
     <string name="add_contact">Thêm vào danh bạ</string>
@@ -19,4 +19,15 @@
     <string name="version">Phiên bản 1.1</string>
     <string name="app_name">Secure SMS</string>
     <string name="send_failed">Gửi lỗi</string>
+    <string name="change_passphrase">Đổi mật khẩu mã hóa</string>
+    <string name="change_passphrase_warning">Sau khi thay đổi mật khẩu, tất cả các tin nhắn mà bạn gửi đến địa chỉ này sẽ được mã hóa bằng mật khẩu mới. Hãy chắc chắn rằng người nhận có cùng một mật khẩu để giải mã</string>
+    <string name="current_passphrase">Mật khẩu mã hóa hiện tại</string>
+    <string name="new_passphrase">Mật khẩu mã hóa mới</string>
+    <string name="retype_new_passphrase">Nhập lại mật khẩu mã hóa mới</string>
+    <string name="field_can_not_null">Các trường không được để trống</string>
+    <string name="passphrase_not_match">Các mật khẩu mới không khớp nhau</string>
+    <string name="update_passphrase_success">Đổi mật khẩu mã hóa thành công</string>
+    <string name="update_passphrase_failure">Đổi mật khẩu mã hóa thất bại</string>
+    <string name="current_passphrase_incorrect">Mật khẩu hiện tại không chính xác</string>
+    <string name="processing">Đang xử lý</string>
 </resources>
