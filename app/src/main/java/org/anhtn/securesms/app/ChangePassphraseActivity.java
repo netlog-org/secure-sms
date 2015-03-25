@@ -37,20 +37,6 @@ public class ChangePassphraseActivity extends ActionBarActivity {
         editNew1 = (EditText) findViewById(R.id.edit2);
         editNew2 = (EditText) findViewById(R.id.edit3);
 
-        findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        findViewById(R.id.button_done).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onDone();
-            }
-        });
-
         mAddress = getIntent().getStringExtra("address");
         mAppPassphrase = getIntent().getStringExtra("app_passphrase");
 
@@ -63,6 +49,18 @@ public class ChangePassphraseActivity extends ActionBarActivity {
                 getSupportFragmentManager().findFragmentById(R.id.fragment_done_cancel);
         frag.setMode(DoneCancelBarFragment.MODE_NAVIGATION);
         frag.setDropdownItems(new String[]{mAddress});
+        frag.setOnDoneListener(new DoneCancelBarFragment.OnDoneClickListener() {
+            @Override
+            public void onClick(View v) {
+                onDone();
+            }
+        });
+        frag.setOnCancelListener(new DoneCancelBarFragment.OnCancelClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override

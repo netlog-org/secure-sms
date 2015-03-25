@@ -22,6 +22,8 @@ public class DoneCancelBarFragment extends Fragment {
     private Spinner spinner;
     private TextView textView;
 
+    private View.OnClickListener mOnDoneListener, mOnCancelListener;
+
     @Override
     @SuppressWarnings("unchecked")
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
@@ -32,6 +34,24 @@ public class DoneCancelBarFragment extends Fragment {
         mAdapter = new ArrayAdapter<>(getActivity(), R.layout.view_spinner_item);
         mAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(mAdapter);
+
+        v.findViewById(R.id.button_done).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnDoneListener != null) {
+                    mOnDoneListener.onClick(v);
+                }
+            }
+        });
+
+        v.findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnCancelListener != null) {
+                    mOnCancelListener.onClick(v);
+                }
+            }
+        });
 
         return v;
     }
@@ -66,4 +86,16 @@ public class DoneCancelBarFragment extends Fragment {
             imgButton.setImageResource(resId);
         }
     }
+
+    public void setOnDoneListener(OnDoneClickListener listener) {
+        mOnDoneListener = listener;
+    }
+
+    public void setOnCancelListener(OnCancelClickListener listener) {
+        mOnCancelListener = listener;
+    }
+
+    public static interface OnDoneClickListener extends View.OnClickListener {}
+
+    public static interface OnCancelClickListener extends View.OnClickListener {}
 }
