@@ -17,7 +17,7 @@
             android:title="@string/pref_change_password_title"
             android:dependency="use_password"
             android:summary="@string/pref_change_password_summary"
-            android:key="use_password" />
+            android:key="change_password" />
 
         <Preference
             android:title="@string/pref_change_passphrase_title"
