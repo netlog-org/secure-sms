@@ -204,7 +204,7 @@ public class SmsMessageActivity extends ActionBarActivity
                                     ChangePassphraseActivity.class);
                             i.putExtra("app_passphrase", Global.DEFAULT_PASSPHRASE);
                             i.putExtra("address", mAddress);
-                            startActivityForResult(i, ChangePassphraseActivity.REQUEST_CODE);
+                            startActivity(i);
                         }
                     }).show();
         }

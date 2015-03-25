@@ -20,8 +20,6 @@ import org.anhtn.securesms.utils.Global;
 
 public class ChangePassphraseActivity extends ActionBarActivity {
 
-    public static final int REQUEST_CODE = 2609;
-
     private EditText editOld, editNew1, editNew2;
     private ProgressDialog pd;
     private String mAddress, mAppPassphrase;
@@ -42,7 +40,6 @@ public class ChangePassphraseActivity extends ActionBarActivity {
         findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setResult(RESULT_CANCELED);
                 finish();
             }
         });
