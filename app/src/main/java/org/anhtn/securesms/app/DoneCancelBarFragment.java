@@ -87,12 +87,25 @@ public class DoneCancelBarFragment extends Fragment {
         }
     }
 
+    public void setTitleInNormalMode(int resId) {
+        textView.setText(resId);
+    }
+
     public void setOnDoneListener(OnDoneClickListener listener) {
         mOnDoneListener = listener;
     }
 
     public void setOnCancelListener(OnCancelClickListener listener) {
         mOnCancelListener = listener;
+    }
+
+    public Spinner getSpinner() {
+        return spinner;
+    }
+
+    @SuppressWarnings("unused")
+    public TextView getTextView() {
+        return textView;
     }
 
     public static interface OnDoneClickListener extends View.OnClickListener {}

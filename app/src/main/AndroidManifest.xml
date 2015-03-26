@@ -50,8 +50,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".app.ChangePassphraseActivity"
-            android:label="@string/app_name" >
+            android:name=".app.AesPassphraseActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
             android:name=".setting.SettingActivity"
@@ -61,12 +62,21 @@
                 android:value=".app.SmsConversationActivity" />
         </activity>
         <activity
-            android:parentActivityName=".app.SmsConversationActivity"
             android:name=".setting.SettingWithFragmentActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:parentActivityName=".app.SmsConversationActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".app.SmsConversationActivity" />
+        </activity>
+        <activity
+            android:name=".app.AuthenticationActivity"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="stateVisible|adjustResize" >
+        </activity>
+        <activity
+            android:name=".app.AppPassphraseActivity"
+            android:label="@string/app_name" >
         </activity>
 
         <service

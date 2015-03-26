@@ -11,7 +11,6 @@
         Mật khẩu sẽ ngăn chặn những người khác có thể thay đổi các thiết lập của ban trong ứng dụng này
     </string>
     <string name="pref_change_password_title">Đổi mật khẩu</string>
-    <string name="pref_change_pasphrase_title">Đổi mật khẩu mã hóa</string>
     <string name="pref_change_passphrase_summary">
         Mật khẩu mã hóa được sử dụng để mã hóa/giải mã các tin nhắn với mỗi địa chỉ
     </string>

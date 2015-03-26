@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
@@ -15,6 +16,8 @@ import org.anhtn.securesms.model.SentMessageModel;
 import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.Global;
 import org.anhtn.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
+import org.anhtn.securesms.utils.Keys;
+import org.anhtn.securesms.utils.PasswordManager;
 import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
 import java.util.List;
@@ -23,6 +26,8 @@ import java.util.Locale;
 public class UpdatePassphraseService extends IntentService {
 
     public static final String UPDATE_PASSPHRASE_DONE = "update.passphrase.done";
+    public static final String ACTION_UPDATE_AES_PASSPHRASE = "update.aes.passphrase";
+    public static final String ACTION_UPDATE_APP_PASSPHRASE = "update.app.passphrase";
 
     public UpdatePassphraseService() {
         super("UpdatePassphraseService");
@@ -30,31 +35,50 @@ public class UpdatePassphraseService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        if (intent != null && Intent.ACTION_EDIT.equals(intent.getAction())) {
-            final String address = intent.getStringExtra("address");
-            final String oldPassphrase = intent.getStringExtra("old_passphrase");
-            final String newPassphrase = intent.getStringExtra("new_passphrase");
-            final String appPassphrase = intent.getStringExtra("app_passphrase");
+        if (intent == null) return;
+        final String action = intent.getAction();
+        boolean ok = true;
 
-            boolean ok = updatePassphraseInLocalDb(address, newPassphrase, appPassphrase)
+        if (ACTION_UPDATE_AES_PASSPHRASE.equals(action)) {
+            final String address = intent.getStringExtra(Keys.ADDRESS);
+            final String oldPassphrase = intent.getStringExtra(Keys.OLD_PASSPHRASE);
+            final String newPassphrase = intent.getStringExtra(Keys.NEW_PASSPHRASE);
+            final String appPassphrase = intent.getStringExtra(Keys.APP_PASSPHRASE);
+
+            ok = updateAesPassphraseInLocalDb(address, newPassphrase, appPassphrase)
                     && updateMessageInContentResolver(address, oldPassphrase, newPassphrase)
                     && updateMessageInLocalDb(address, oldPassphrase, newPassphrase);
-            if (ok) {
-                Toast.makeText(this, R.string.update_passphrase_success,
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, R.string.update_passphrase_failure,
-                        Toast.LENGTH_SHORT).show();
-            }
-
-            Intent i = new Intent(UPDATE_PASSPHRASE_DONE);
-            i.putExtra("result", ok ? "ok" : "fail");
-            LocalBroadcastManager.getInstance(this).sendBroadcast(i);
         }
+        else if (ACTION_UPDATE_APP_PASSPHRASE.equals(action)) {
+            final String oldPassphrase = intent.getStringExtra(Keys.OLD_PASSPHRASE);
+            final String newPassphrase = intent.getStringExtra(Keys.NEW_PASSPHRASE);
+
+            List<PassphraseModel> models = PassphraseModel.getAll(this);
+            for (PassphraseModel model : models) {
+                String plain = AESHelper.decryptFromBase64(oldPassphrase, model.Passphrase);
+                model.Passphrase = AESHelper.encryptToBase64(newPassphrase, plain);
+                if (!(ok = model.update(this))) {
+                    Global.error("Update encryption passphrase in local db error." +
+                            ". Passphrase id: " + model._Id +
+                            ". Plain text: " + plain);
+                    break;
+                }
+            }
+            if (ok) {
+                if (newPassphrase.equals(Global.DEFAULT_PASSPHRASE))
+                    PasswordManager.removePassword(this);
+                else
+                    PasswordManager.storePassword(this, newPassphrase);
+            }
+        }
+
+        Intent i = new Intent(UPDATE_PASSPHRASE_DONE);
+        i.putExtra("result", ok);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(i);
     }
 
-    private boolean updatePassphraseInLocalDb(String address, String passphrase,
-                                              String appPassphrase) {
+    private boolean updateAesPassphraseInLocalDb(String address, String passphrase,
+                                                 String appPassphrase) {
         boolean ok;
         PassphraseModel model = PassphraseModel.findByAddress(this, address);
         if (model != null) {

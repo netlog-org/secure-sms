@@ -201,7 +201,7 @@ public class SmsMessageActivity extends ActionBarActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             Intent i = new Intent(SmsMessageActivity.this,
-                                    ChangePassphraseActivity.class);
+                                    AesPassphraseActivity.class);
                             i.putExtra("app_passphrase", Global.DEFAULT_PASSPHRASE);
                             i.putExtra("address", mAddress);
                             startActivity(i);

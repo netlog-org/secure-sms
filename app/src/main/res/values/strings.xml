@@ -35,4 +35,5 @@
     <string name="update_passphrase_failure">Update passphrase failure</string>
     <string name="current_passphrase_incorrect">Current passphrase incorrect</string>
     <string name="processing">Processing</string>
+    <string name="enter_password">Enter password</string>
 </resources>
