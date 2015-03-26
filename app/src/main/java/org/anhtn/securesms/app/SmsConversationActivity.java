@@ -23,6 +23,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.melnykov.fab.FloatingActionButton;
+
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.loaders.SmsConversationLoader;
 import org.anhtn.securesms.model.SmsConversation;
@@ -72,6 +74,17 @@ public class SmsConversationActivity extends ActionBarActivity
         });
         listView.setEmptyView(findViewById(R.id.text_list_empty));
         listView.setAdapter(mAdapter);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setShadow(true);
+        fab.attachToListView(listView);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(SmsConversationActivity.this, ContactActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     @Override
