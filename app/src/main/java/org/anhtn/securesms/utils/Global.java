@@ -9,6 +9,10 @@ public class Global {
     public static final String DEFAULT_PASSPHRASE = "%1q2W3e4R5ta@_[}&#";
     public static final String MESSAGE_PREFIX = "$]";
 
+    public static long sLastTimeLeave = 0;
+    public static final long TIME_NEED_RE_AUTHENTICATE = 10000l; // 30 seconds
+    public static final int AUTHENTICATE_REQUEST_CODE = 211;
+
     public static boolean smartContains(String s1, String s2, List<Integer> matchedPos) {
         if (s2.length() > s1.length()) return false;
         else if (s2.length() == s1.length()) return s1.equals(s2);

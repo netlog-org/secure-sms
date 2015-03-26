@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.fragments.DoneCancelBarFragment;
+import org.anhtn.securesms.utils.Global;
 import org.anhtn.securesms.utils.Keys;
 import org.anhtn.securesms.utils.PasswordManager;
 
@@ -54,5 +55,11 @@ public class AuthenticationActivity extends ActionBarActivity {
         });
         frag.setMode(DoneCancelBarFragment.MODE_NORMAL);
         frag.setTitleInNormalMode(R.string.enter_password);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Global.sLastTimeLeave = System.currentTimeMillis();
     }
 }

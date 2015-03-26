@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,10 +36,8 @@ import org.anhtn.securesms.utils.Global;
 import java.util.List;
 
 
-public class SmsConversationActivity extends ActionBarActivity
+public class SmsConversationActivity extends BasePasswordProtectedActivity
         implements LoaderManager.LoaderCallbacks<List<SmsConversation>>{
-
-    public static boolean sLeaveFromChild = false;
 
     private SmsListAdapter mAdapter;
     private ProgressBar pb;
@@ -104,10 +101,6 @@ public class SmsConversationActivity extends ActionBarActivity
     @Override
     protected void onStart() {
         super.onStart();
-//        if (!sLeaveFromChild) {
-//            showInputPasswordDialog();
-//        } else sLeaveFromChild = false;
-
         setListViewVisible(false);
         mAdapter.clear();
 
@@ -115,6 +108,14 @@ public class SmsConversationActivity extends ActionBarActivity
             getSupportLoaderManager().initLoader(0, null, this);
         } else {
             getSupportLoaderManager().restartLoader(0, null, this);
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (Intent.ACTION_SHUTDOWN.equals(intent.getAction())) {
+            finish();
         }
     }
 
