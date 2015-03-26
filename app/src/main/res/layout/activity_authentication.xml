@@ -38,7 +38,7 @@
                 android:layout_below="@+id/edit_passphrase"
                 android:text="@string/current_passphrase_incorrect"
                 android:textSize="14sp"
-                android:textColor="@color/gg_red"
+                android:textColor="@color/gg_red500"
                 android:gravity="center_horizontal"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:layout_width="match_parent"

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="app_background">@color/gg_green</color>
+    <color name="app_background">@color/gg_green500</color>
     <color name="button_focused">@color/background_material_light</color>
     <color name="button_pressed">@color/material_deep_teal_200</color>
     <color name="button_normal">@color/background_material_light</color>
 
-    <color name="gg_green">#FF43A047</color>
-    <color name="gg_red">#FFF44336</color>
-    <color name="gg_blue">#ff3ba2cb</color>
+    <color name="gg_green500">#FF43A047</color>
+    <color name="gg_red500">#FFF44336</color>
+    <color name="gg_blue500">#ff3ba2cb</color>
     <color name="gg_grey100">#F5F5F5</color>
     <color name="gg_grey200">#EEEEEE</color>
     <color name="gg_grey300">#E0E0E0</color>
