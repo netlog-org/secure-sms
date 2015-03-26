@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/fragment_done_cancel"
         android:tag="done_cancel"
-        android:name="org.anhtn.securesms.app.DoneCancelBarFragment"
+        android:name="org.anhtn.securesms.fragments.DoneCancelBarFragment"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize" />
 

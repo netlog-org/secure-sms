@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.crypto.AESHelper;
+import org.anhtn.securesms.fragments.DoneCancelBarFragment;
 import org.anhtn.securesms.model.Contact;
 import org.anhtn.securesms.model.PassphraseModel;
 import org.anhtn.securesms.services.UpdatePassphraseService;

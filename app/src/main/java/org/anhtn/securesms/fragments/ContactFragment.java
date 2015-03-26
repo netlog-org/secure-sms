@@ -1,4 +1,4 @@
-package org.anhtn.securesms.app;
+package org.anhtn.securesms.fragments;
 
 import android.app.AlertDialog;
 import android.app.SearchManager;
@@ -30,6 +30,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.app.SmsMessageActivity;
 import org.anhtn.securesms.loaders.ContactLoader;
 import org.anhtn.securesms.model.Contact;
 import org.anhtn.securesms.utils.CacheHelper;

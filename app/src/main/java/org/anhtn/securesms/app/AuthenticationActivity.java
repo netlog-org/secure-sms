@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.fragments.DoneCancelBarFragment;
 import org.anhtn.securesms.utils.Keys;
 import org.anhtn.securesms.utils.PasswordManager;
 

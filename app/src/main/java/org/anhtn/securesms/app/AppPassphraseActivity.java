@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.fragments.DoneCancelBarFragment;
 import org.anhtn.securesms.services.UpdatePassphraseService;
 import org.anhtn.securesms.utils.Global;
 import org.anhtn.securesms.utils.Keys;

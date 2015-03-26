@@ -1,4 +1,4 @@
-package org.anhtn.securesms.app;
+package org.anhtn.securesms.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
