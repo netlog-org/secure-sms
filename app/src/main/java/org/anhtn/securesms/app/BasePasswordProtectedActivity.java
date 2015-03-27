@@ -19,12 +19,12 @@ public class BasePasswordProtectedActivity extends ActionBarActivity {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         if (pref.getBoolean(Keys.PREF_ENABLE_APP_PASSPHRASE, false)) {
             final long timeLeave = System.currentTimeMillis() - Global.sLastTimeLeave;
-            Global.error("Time user leave app: " + timeLeave/1000 + " seconds");
             if (timeLeave > Global.TIME_NEED_RE_AUTHENTICATE) {
                 Intent i = new Intent(this, AuthenticationActivity.class);
                 startActivityForResult(i, Global.AUTHENTICATE_REQUEST_CODE);
             }
         }
+        else mAppPassphrase = Global.DEFAULT_PASSPHRASE;
     }
 
     @Override

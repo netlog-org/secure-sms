@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import org.anhtn.securesms.crypto.AESHelper;
-import org.anhtn.securesms.model.PassphraseModel;
 import org.anhtn.securesms.model.SentMessageModel;
 import org.anhtn.securesms.model.SmsMessage;
 import org.anhtn.securesms.utils.Country;
@@ -22,17 +21,10 @@ public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
     private String mAddress;
     private String mPassphrase;
 
-    public SmsMessageLoader(Context context, String address, String appPassphrase) {
+    public SmsMessageLoader(Context context, String address, String passphrase) {
         super(context);
         mAddress = address;
-
-        PassphraseModel model = PassphraseModel.findByAddress(context, address);
-        if (model != null) {
-            mPassphrase = AESHelper.decryptFromBase64(appPassphrase,
-                    model.Passphrase.replace(Global.MESSAGE_PREFIX, ""));
-        } else {
-            mPassphrase = Global.DEFAULT_PASSPHRASE;
-        }
+        mPassphrase = passphrase;
     }
 
     @Override

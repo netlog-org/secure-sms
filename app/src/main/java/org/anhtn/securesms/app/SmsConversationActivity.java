@@ -26,12 +26,15 @@ import android.widget.TextView;
 import com.melnykov.fab.FloatingActionButton;
 
 import org.anhtn.securesms.R;
+import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.loaders.SmsConversationLoader;
+import org.anhtn.securesms.model.PassphraseModel;
 import org.anhtn.securesms.model.SmsConversation;
 import org.anhtn.securesms.setting.SettingActivity;
 import org.anhtn.securesms.setting.SettingWithFragmentActivity;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
+import org.anhtn.securesms.utils.Keys;
 
 import java.util.List;
 
@@ -63,10 +66,22 @@ public class SmsConversationActivity extends BasePasswordProtectedActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(SmsConversationActivity.this, SmsMessageActivity.class);
                 final SmsConversation conversation = mAdapter.getItem(position);
+                final String passphrase;
+                PassphraseModel model = PassphraseModel.findByAddress(
+                        SmsConversationActivity.this, conversation.Address);
+                if (model != null) {
+                    passphrase = AESHelper.decryptFromBase64(getAppPassphrase(),
+                            model.Passphrase);
+                } else {
+                    passphrase = Global.DEFAULT_PASSPHRASE;
+                }
+
+                Intent i = new Intent(SmsConversationActivity.this, SmsMessageActivity.class);
                 i.putExtra("address", conversation.Address);
                 i.putExtra("addressInContact", conversation.AddressInContact);
+                i.putExtra("passphrase", passphrase);
+                i.putExtra(Keys.APP_PASSPHRASE, getAppPassphrase());
                 startActivity(i);
             }
         });
@@ -93,6 +108,7 @@ public class SmsConversationActivity extends BasePasswordProtectedActivity
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(SmsConversationActivity.this, ContactActivity.class);
+                i.putExtra(Keys.APP_PASSPHRASE, getAppPassphrase());
                 startActivity(i);
             }
         });

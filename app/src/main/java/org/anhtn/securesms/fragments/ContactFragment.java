@@ -31,10 +31,13 @@ import android.widget.TextView;
 
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.app.SmsMessageActivity;
+import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.loaders.ContactLoader;
 import org.anhtn.securesms.model.Contact;
+import org.anhtn.securesms.model.PassphraseModel;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Global;
+import org.anhtn.securesms.utils.Keys;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -221,10 +224,22 @@ public class ContactFragment extends ListFragment
     }
 
     private void goToSendMessageActivity(String phoneNumber, String contactName) {
+        final Intent intent = getActivity().getIntent();
+        final String appPassphrase = intent.getStringExtra(Keys.APP_PASSPHRASE);
+        final String passphrase;
+        PassphraseModel model = PassphraseModel.findByAddress(getActivity(), phoneNumber);
+        if (model != null) {
+            passphrase = AESHelper.decryptFromBase64(appPassphrase, model.Passphrase);
+        } else {
+            passphrase = Global.DEFAULT_PASSPHRASE;
+        }
+
         Intent i = new Intent(getActivity(), SmsMessageActivity.class);
         i.putExtra("address", phoneNumber);
         i.putExtra("addressInContact", contactName);
-        i.putExtra("content", getActivity().getIntent().getStringExtra("content"));
+        i.putExtra("content", intent.getStringExtra("content"));
+        i.putExtra("passphrase", passphrase);
+        i.putExtra(Keys.APP_PASSPHRASE, appPassphrase);
         startActivity(i);
     }
 

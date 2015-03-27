@@ -36,6 +36,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.anhtn.securesms.BuildConfig;
 import org.anhtn.securesms.R;
 import org.anhtn.securesms.crypto.AESHelper;
 import org.anhtn.securesms.loaders.SmsMessageLoader;
@@ -46,6 +47,7 @@ import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.Global;
 import org.anhtn.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
+import org.anhtn.securesms.utils.Keys;
 import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
 import java.text.DateFormat;
@@ -68,6 +70,7 @@ public class SmsMessageActivity extends ActionBarActivity
     private ListView listView;
     private TextView txtNewSms;
     private String mAddress;
+    private String mPassphrase, mAppPassphrase;
     private int mCurrentPosLongClick = -1;
 
     @Override
@@ -79,8 +82,15 @@ public class SmsMessageActivity extends ActionBarActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mAddress = getIntent().getStringExtra("address");
-        String addressInContact = getIntent().getStringExtra("addressInContact");
+        final Intent i = getIntent();
+        mPassphrase = i.getStringExtra("passphrase");
+        mAppPassphrase = i.getStringExtra(Keys.APP_PASSPHRASE);
+        if (BuildConfig.DEBUG) {
+            if (mPassphrase == null || mAppPassphrase == null)
+                throw new AssertionError();
+        }
+        mAddress = i.getStringExtra("address");
+        String addressInContact = i.getStringExtra("addressInContact");
         if (addressInContact == null) {
             addressInContact = mAddress;
         }
@@ -88,7 +98,7 @@ public class SmsMessageActivity extends ActionBarActivity
 
         pb = (ProgressBar) findViewById(R.id.progress);
         txtNewSms = (TextView) findViewById(R.id.text);
-        final String content = getIntent().getStringExtra("content");
+        final String content = i.getStringExtra("content");
         if (content != null) {
             txtNewSms.setText(content);
         }
@@ -144,7 +154,6 @@ public class SmsMessageActivity extends ActionBarActivity
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mSmsSentReceiver);
-        SmsConversationActivity.sLeaveFromChild = true;
     }
 
     @Override
@@ -202,7 +211,7 @@ public class SmsMessageActivity extends ActionBarActivity
                         public void onClick(DialogInterface dialog, int which) {
                             Intent i = new Intent(SmsMessageActivity.this,
                                     AesPassphraseActivity.class);
-                            i.putExtra("app_passphrase", Global.DEFAULT_PASSPHRASE);
+                            i.putExtra("app_passphrase", mAppPassphrase);
                             i.putExtra("address", mAddress);
                             startActivity(i);
                         }
@@ -263,8 +272,7 @@ public class SmsMessageActivity extends ActionBarActivity
 
     @Override
     public Loader<List<SmsMessage>> onCreateLoader(int id, Bundle args) {
-        return new SmsMessageLoader(this, args.getString("address"),
-                Global.DEFAULT_PASSPHRASE);
+        return new SmsMessageLoader(this, args.getString("address"), mPassphrase);
     }
 
     @Override
@@ -309,6 +317,8 @@ public class SmsMessageActivity extends ActionBarActivity
                         i.putExtra("content", sms.Content);
                         i.putExtra("address", list.get(which).Address);
                         i.putExtra("addressInContact", list.get(which).AddressInContact);
+                        i.putExtra("passphrase", mPassphrase);
+                        i.putExtra(Keys.APP_PASSPHRASE, mAppPassphrase);
                         startActivity(i);
                     }
                 }).show();
@@ -347,8 +357,9 @@ public class SmsMessageActivity extends ActionBarActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            Intent i = new Intent(SmsMessageActivity.this,
-                                    ContactActivity.class);
+                            SmsMessageActivity self = SmsMessageActivity.this;
+                            Intent i = new Intent(self, ContactActivity.class);
+                            i.putExtra(Keys.APP_PASSPHRASE, mAppPassphrase);
                             i.putExtra("content",mAdapter.getItem(mCurrentPosLongClick).Content);
                             startActivity(i);
                         } else {
@@ -419,7 +430,7 @@ public class SmsMessageActivity extends ActionBarActivity
     }
 
     private void sendSms(String msg) {
-        String cipherText = AESHelper.encryptToBase64(Global.DEFAULT_PASSPHRASE, msg);
+        String cipherText = AESHelper.encryptToBase64(mPassphrase, msg);
         try {
             if (cipherText == null)
                 throw new NullPointerException();
