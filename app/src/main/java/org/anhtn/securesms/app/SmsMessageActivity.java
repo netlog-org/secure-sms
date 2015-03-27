@@ -19,6 +19,7 @@ import android.provider.ContactsContract.Intents;
 import android.provider.ContactsContract.RawContacts;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
@@ -45,6 +46,7 @@ import org.anhtn.securesms.loaders.SmsMessageLoader;
 import org.anhtn.securesms.model.SentMessageModel;
 import org.anhtn.securesms.model.SmsMessage;
 import org.anhtn.securesms.model.SmsConversation;
+import org.anhtn.securesms.services.DeleteMessageService;
 import org.anhtn.securesms.utils.CacheHelper;
 import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.Global;
@@ -151,12 +153,17 @@ public class SmsMessageActivity extends ActionBarActivity
     protected void onResume() {
         super.onResume();
         registerReceiver(mSmsSentReceiver, new IntentFilter(INTENT_SMS_SENT));
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mDeleteMessageDoneReceiver,
+                new IntentFilter(DeleteMessageService.DELETE_MESSAGE_DONE));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(mSmsSentReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(
+                mDeleteMessageDoneReceiver);
     }
 
     @Override
@@ -400,28 +407,10 @@ public class SmsMessageActivity extends ActionBarActivity
     }
 
     private void deleteAllMessageOfAddress() {
-        Uri uri = Uri.parse("content://sms/");
-        String address = mAddress;
-        if (address == null) return;
-        String where;
-        boolean deleteSuccess;
-
-        try {
-            address = String.valueOf(Long.parseLong(address));
-            if (!PhoneNumberConverterFactory.getConverter(
-                    new Locale("vn", Country.VIETNAM)).isValidPersonalNumber(address)) {
-                throw new NotValidPersonalNumberException();
-            }
-            where = "address like '%" + address + "'";
-        } catch (NumberFormatException | NotValidPersonalNumberException ex) {
-            where = "address='" + address + "'";
-        }
-        deleteSuccess = (getContentResolver().delete(uri, where, null) != -1)
-                && SentMessageModel.deleteByAddress(this, mAddress);
-        if (!deleteSuccess) {
-            Toast.makeText(this, R.string.delete_fail, Toast.LENGTH_SHORT).show();
-        }
-        finish();
+        Intent i = new Intent(this, DeleteMessageService.class);
+        i.setAction(Intent.ACTION_DELETE);
+        i.putExtra("address", mAddress);
+        startService(i);
     }
 
     private void deleteListViewItem(int position) {
@@ -494,6 +483,18 @@ public class SmsMessageActivity extends ActionBarActivity
                     Global.error("Save sent message to database failed");
                 }
             }
+        }
+    };
+
+    private BroadcastReceiver mDeleteMessageDoneReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (!intent.getBooleanExtra("result", false)) {
+                Toast.makeText(SmsMessageActivity.this, R.string.delete_fail,
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+            finish();
         }
     };
 
