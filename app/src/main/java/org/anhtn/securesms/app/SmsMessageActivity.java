@@ -62,6 +62,7 @@ public class SmsMessageActivity extends ActionBarActivity
         implements LoaderManager.LoaderCallbacks<List<SmsMessage>> {
 
     private static final String INTENT_SMS_SENT = "org.anhtn.securesms.INTENT_SMS_SENT";
+    private static final int UPDATE_PASSPHRASE_REQUEST_CODE = 0xaecf;
 
     private static final int MENU_COPY_ID = 123;
     private static final int MENU_FORWARD_ID = 456;
@@ -159,6 +160,16 @@ public class SmsMessageActivity extends ActionBarActivity
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == UPDATE_PASSPHRASE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                mPassphrase = data.getStringExtra("passphrase");
+            }
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_sms_message, menu);
@@ -215,7 +226,7 @@ public class SmsMessageActivity extends ActionBarActivity
                                     AesPassphraseActivity.class);
                             i.putExtra("app_passphrase", mAppPassphrase);
                             i.putExtra("address", mAddress);
-                            startActivity(i);
+                            startActivityForResult(i, UPDATE_PASSPHRASE_REQUEST_CODE);
                         }
                     }).show();
         }

@@ -41,6 +41,7 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
         frag.setOnCancelListener(new DoneCancelBarFragment.OnCancelClickListener() {
             @Override
             public void onClick(View v) {
+                setResult(RESULT_CANCELED);
                 finish();
             }
         });
@@ -65,10 +66,13 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
     @Override
     protected void onUpdatePassphraseDone(Intent data) {
         super.onUpdatePassphraseDone(data);
-        int resId = (data.getBooleanExtra("result", false))
-                ? R.string.update_passphrase_success
+        final boolean ok = data.getBooleanExtra("result", false);
+        int resId = (ok) ? R.string.update_passphrase_success
                 : R.string.update_passphrase_failure;
         Toast.makeText(getApplicationContext(), resId, Toast.LENGTH_SHORT).show();
+
+        data.putExtra("passphrase", editNew1.getText().toString());
+        setResult(ok ? RESULT_OK : RESULT_CANCELED, data);
         if (mAddress != null) finish();
     }
 
