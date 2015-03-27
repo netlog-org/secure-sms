@@ -13,6 +13,8 @@ import org.anhtn.securesms.utils.Country;
 import org.anhtn.securesms.utils.PhoneNumberConverterFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -67,6 +69,16 @@ public class SmsConversationLoader extends SimpleBaseLoader<List<SmsConversation
                 conversation.Content = model.Body;
             }
         }
+        Collections.sort(results, new Comparator<SmsConversation>() {
+            @Override
+            public int compare(SmsConversation lhs, SmsConversation rhs) {
+                long l1 = Long.parseLong(lhs.Date);
+                long l2 = Long.parseLong(rhs.Date);
+                if (l1 > l2) return -1;
+                else if (l1 == l2) return 0;
+                else return 1;
+            }
+        });
 
         return results;
     }
