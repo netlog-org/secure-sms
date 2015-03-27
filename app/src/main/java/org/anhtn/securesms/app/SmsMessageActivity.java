@@ -9,9 +9,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Intents;
 import android.provider.ContactsContract.RawContacts;
@@ -467,15 +469,19 @@ public class SmsMessageActivity extends ActionBarActivity
             mAdapter.add(sms);
             scrollListViewToBottom();
 
-            SentMessageModel model = new SentMessageModel();
-            model.Status = (getResultCode() == RESULT_OK)
-                    ? SentMessageModel.STATUS_SENT_SUCCESS
-                    : SentMessageModel.STATUS_SENT_FAIL;
-            model.Date = String.valueOf(currentTimeMillis);
-            model.Body = encryptedMsg;
-            model.Address = mAddress;
-            if (model.insert(SmsMessageActivity.this) == -1) {
-                Global.error("Save sent message to database failed");
+            SharedPreferences pref = PreferenceManager
+                    .getDefaultSharedPreferences(SmsMessageActivity.this);
+            if (pref.getBoolean("save_sent_message", false)) {
+                SentMessageModel model = new SentMessageModel();
+                model.Status = (getResultCode() == RESULT_OK)
+                        ? SentMessageModel.STATUS_SENT_SUCCESS
+                        : SentMessageModel.STATUS_SENT_FAIL;
+                model.Date = String.valueOf(currentTimeMillis);
+                model.Body = encryptedMsg;
+                model.Address = mAddress;
+                if (model.insert(SmsMessageActivity.this) == -1) {
+                    Global.error("Save sent message to database failed");
+                }
             }
         }
     };
