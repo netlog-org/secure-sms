@@ -37,7 +37,8 @@ public class BasePassphraseActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        LocalBroadcastManager.getInstance(this).registerReceiver(mUpdatePassphraseReceiver,
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mUpdatePassphraseReceiver,
                 new IntentFilter(UpdatePassphraseService.UPDATE_PASSPHRASE_DONE));
     }
 
