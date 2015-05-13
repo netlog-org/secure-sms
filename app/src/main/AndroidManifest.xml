@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.anhtn.securesms" >
+    package="org.thanthoai.securesms" >
 
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -13,34 +13,34 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".app.SmsConversationActivity"
+            android:name="org.thanthoai.securesms.app.SmsConversationActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop" >
         </activity>
         <activity
-            android:name=".app.SmsMessageActivity"
+            android:name="org.thanthoai.securesms.app.SmsMessageActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".app.SmsConversationActivity"
+            android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
             android:windowSoftInputMode="stateHidden|adjustUnspecified" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.SmsConversationActivity" />
+                android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
         </activity>
         <activity
-            android:name=".app.ContactActivity"
+            android:name="org.thanthoai.securesms.app.ContactActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/app_name"
-            android:parentActivityName=".app.SmsConversationActivity"
+            android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
             android:windowSoftInputMode="stateHidden|adjustUnspecified" >
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.SmsConversationActivity" />
+                android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
         </activity>
         <activity
-            android:name=".app.SplashScreenActivity"
+            android:name="org.thanthoai.securesms.app.SplashScreenActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/app_name" >
             <intent-filter>
@@ -50,42 +50,42 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".app.AesPassphraseActivity"
+            android:name="org.thanthoai.securesms.app.AesPassphraseActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
-            android:name=".setting.SettingActivity"
+            android:name="org.thanthoai.securesms.setting.SettingActivity"
             android:label="@string/app_name" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.SmsConversationActivity" />
+                android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
         </activity>
         <activity
-            android:name=".setting.SettingWithFragmentActivity"
+            android:name="org.thanthoai.securesms.setting.SettingWithFragmentActivity"
             android:label="@string/app_name"
-            android:parentActivityName=".app.SmsConversationActivity" >
+            android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".app.SmsConversationActivity" />
+                android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
         </activity>
         <activity
-            android:name=".app.AuthenticationActivity"
+            android:name="org.thanthoai.securesms.app.AuthenticationActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateVisible|adjustResize" >
         </activity>
         <activity
-            android:name=".app.AppPassphraseActivity"
+            android:name="org.thanthoai.securesms.app.AppPassphraseActivity"
             android:label="@string/app_name" >
         </activity>
 
         <service
-            android:name=".services.UpdatePassphraseService"
+            android:name="org.thanthoai.securesms.services.UpdatePassphraseService"
             android:exported="false" >
         </service>
         <service
-            android:name=".services.DeleteMessageService"
+            android:name="org.thanthoai.securesms.services.DeleteMessageService"
             android:exported="false" >
         </service>
     </application>

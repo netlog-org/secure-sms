@@ -2,11 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="org.anhtn.securesms.app.AuthenticationActivity">
+    tools:context="org.thanthoai.securesms.app.AuthenticationActivity">
 
     <fragment
         android:id="@+id/fragment_done_cancel"
-        android:name="org.anhtn.securesms.fragments.DoneCancelBarFragment"
+        android:name="org.thanthoai.securesms.fragments.DoneCancelBarFragment"
         android:tag="@null"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
