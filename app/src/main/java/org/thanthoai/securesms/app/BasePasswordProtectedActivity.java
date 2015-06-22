@@ -3,12 +3,12 @@ package org.thanthoai.securesms.app;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
 
-public class BasePasswordProtectedActivity extends ActionBarActivity {
+public abstract class BasePasswordProtectedActivity extends AppCompatActivity {
 
     private String mAppPassphrase;
 

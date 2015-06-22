@@ -99,6 +99,7 @@ public class DoneCancelBarFragment extends Fragment {
         mOnCancelListener = listener;
     }
 
+    @SuppressWarnings("unused")
     public Spinner getSpinner() {
         return spinner;
     }
@@ -108,7 +109,7 @@ public class DoneCancelBarFragment extends Fragment {
         return textView;
     }
 
-    public static interface OnDoneClickListener extends View.OnClickListener {}
+    public interface OnDoneClickListener extends View.OnClickListener {}
 
-    public static interface OnCancelClickListener extends View.OnClickListener {}
+    public interface OnCancelClickListener extends View.OnClickListener {}
 }

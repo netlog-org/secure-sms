@@ -105,6 +105,6 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
         if (model == null) return true;
         final String plainPassphrase = AESHelper.decryptFromBase64(appPassphrase,
                 model.Passphrase.replace(Global.MESSAGE_PREFIX, ""));
-        return plainPassphrase.equals(passphrase);
+        return plainPassphrase != null && plainPassphrase.equals(passphrase);
     }
 }

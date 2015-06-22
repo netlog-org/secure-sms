@@ -1,3 +1,4 @@
+/*
 package org.thanthoai.securesms.crypto;
 
 import org.thanthoai.securesms.utils.Global;
@@ -14,35 +15,47 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 
+*/
 /**
  * Util class to perform encryption/decryption over strings. <br/>
- */
+ *//*
+
 public final class UtilsEncryption {
-    /**
+    */
+/**
      * The logging TAG
-     */
+     *//*
+
     private static final String TAG = UtilsEncryption.class.getName();
 
-    /** */
+    */
+/** *//*
+
     private static final String KEY = "some_encryption_key";
 
-    /**
+    */
+/**
      * Avoid instantiation. <br/>
-     */
+     *//*
+
     private UtilsEncryption() {
     }
 
-    /**
+    */
+/**
      * The HEX characters
-     */
+     *//*
+
     private final static String HEX = "0123456789ABCDEF";
 
-    /**
+    */
+/**
      * Encrypt a given string. <br/>
      *
      * @param cleartext the string to encrypt
      * @return the encrypted string in HEX
-     */
+     *//*
+
     public static String encrypt(String cleartext) {
         try {
             byte[] result = process(Cipher.ENCRYPT_MODE, cleartext.getBytes());
@@ -53,12 +66,14 @@ public final class UtilsEncryption {
         return null;
     }
 
-    /**
+    */
+/**
      * Decrypt a HEX encrypted string. <br/>
      *
      * @param encrypted the HEX string to decrypt
      * @return the decrypted string
-     */
+     *//*
+
     public static String decrypt(String encrypted) {
         try {
             byte[] enc = fromHex(encrypted);
@@ -71,12 +86,14 @@ public final class UtilsEncryption {
     }
 
 
-    /**
+    */
+/**
      * Get the raw encryption key. <br/>
      *
      * @return the raw key
      * @throws NoSuchAlgorithmException
-     */
+     *//*
+
     private static byte[] getRawKey()
             throws NoSuchAlgorithmException, NoSuchProviderException {
         KeyGenerator kgen = KeyGenerator.getInstance("AES");
@@ -86,7 +103,8 @@ public final class UtilsEncryption {
         return kgen.generateKey().getEncoded();
     }
 
-    /**
+    */
+/**
      * Process the given input with the provided mode. <br/>
      *
      * @return the processed value as byte[]
@@ -95,7 +113,8 @@ public final class UtilsEncryption {
      * @throws BadPaddingException
      * @throws NoSuchAlgorithmException
      * @throws NoSuchPaddingException
-     */
+     *//*
+
     private static byte[] process(int mode, byte[] value)
             throws InvalidKeyException, IllegalBlockSizeException,
             BadPaddingException, NoSuchAlgorithmException,
@@ -108,11 +127,13 @@ public final class UtilsEncryption {
         return encrypted;
     }
 
-    /**
+    */
+/**
      * Decode an HEX encoded string into a byte[]. <br/>
      *
      * @return the decoded byte[]
-     */
+     *//*
+
     protected static byte[] fromHex(String value) {
         int len = value.length() / 2;
         byte[] result = new byte[len];
@@ -122,11 +143,13 @@ public final class UtilsEncryption {
         return result;
     }
 
-    /**
+    */
+/**
      * Encode a byte[] into an HEX string. <br/>
      *
      * @return the HEX encoded string
-     */
+     *//*
+
     protected static String toHex(byte[] value) {
         if (value == null) {
             return "";
@@ -141,3 +164,4 @@ public final class UtilsEncryption {
         return result.toString();
     }
 }
+*/

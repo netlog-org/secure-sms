@@ -22,11 +22,13 @@
 
             <ImageView
                 android:src="@drawable/sms_splash"
+                android:contentDescription="@null"
                 android:layout_width="80dp"
                 android:layout_height="80dp" />
 
             <ImageView
                 android:src="@drawable/plus_splash"
+                android:contentDescription="@null"
                 android:scaleType="fitCenter"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
@@ -35,6 +37,7 @@
 
             <ImageView
                 android:src="@drawable/aes_splash"
+                android:contentDescription="@null"
                 android:layout_width="80dp"
                 android:layout_height="80dp" />
         </LinearLayout>

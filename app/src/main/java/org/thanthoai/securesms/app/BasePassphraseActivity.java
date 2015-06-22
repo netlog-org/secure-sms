@@ -7,14 +7,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import org.thanthoai.securesms.R;
 import org.thanthoai.securesms.services.UpdatePassphraseService;
 
-public class BasePassphraseActivity extends ActionBarActivity {
+public abstract class BasePassphraseActivity extends AppCompatActivity {
 
     protected EditText editOld, editNew1, editNew2;
     protected ProgressDialog pd;
@@ -60,7 +60,7 @@ public class BasePassphraseActivity extends ActionBarActivity {
         final String textNew1 = editNew1.getText().toString();
         final String textNew2 = editNew2.getText().toString();
 
-        if (textOld.length() == 0 || textNew1.length() == 0 || textNew2.length() == 0) {
+        if (textOld.isEmpty() || textNew1.isEmpty() || textNew2.isEmpty()) {
             Toast.makeText(this, R.string.field_can_not_null, Toast.LENGTH_SHORT).show();
             editOld.requestFocus();
             return false;
@@ -78,7 +78,7 @@ public class BasePassphraseActivity extends ActionBarActivity {
         if (pd.isShowing()) pd.dismiss();
     }
 
-    private BroadcastReceiver mUpdatePassphraseReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mUpdatePassphraseReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {

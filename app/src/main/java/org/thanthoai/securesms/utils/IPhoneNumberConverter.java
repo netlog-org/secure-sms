@@ -1,10 +1,11 @@
 package org.thanthoai.securesms.utils;
 
+@SuppressWarnings("unused")
 public interface IPhoneNumberConverter {
 
-    public String toLocal(String phoneNumber);
-    public String toGlobal(String phoneNumber);
-    public boolean isValidPersonalNumber(String phoneNumber);
+    String toLocal(String phoneNumber);
+    String toGlobal(String phoneNumber);
+    boolean isValidPersonalNumber(String phoneNumber);
 
-    public static class NotValidPersonalNumberException extends Exception {}
+    class NotValidPersonalNumberException extends Exception {}
 }

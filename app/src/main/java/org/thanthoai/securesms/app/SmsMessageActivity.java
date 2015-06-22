@@ -20,7 +20,8 @@ import android.provider.ContactsContract.RawContacts;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
@@ -44,8 +45,8 @@ import org.thanthoai.securesms.R;
 import org.thanthoai.securesms.crypto.AESHelper;
 import org.thanthoai.securesms.loaders.SmsMessageLoader;
 import org.thanthoai.securesms.model.SentMessageModel;
-import org.thanthoai.securesms.model.SmsMessage;
 import org.thanthoai.securesms.model.SmsConversation;
+import org.thanthoai.securesms.model.SmsMessage;
 import org.thanthoai.securesms.services.DeleteMessageService;
 import org.thanthoai.securesms.utils.CacheHelper;
 import org.thanthoai.securesms.utils.Global;
@@ -56,7 +57,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class SmsMessageActivity extends ActionBarActivity
+public class SmsMessageActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<List<SmsMessage>> {
 
     private static final String INTENT_SMS_SENT = "org.anhtn.securesms.INTENT_SMS_SENT";
@@ -81,7 +82,8 @@ public class SmsMessageActivity extends ActionBarActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_base);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) ab.setDisplayHomeAsUpEnabled(true);
 
         final Intent i = getIntent();
         mPassphrase = i.getStringExtra("passphrase");
@@ -95,7 +97,7 @@ public class SmsMessageActivity extends ActionBarActivity
         if (addressInContact == null) {
             addressInContact = mAddress;
         }
-        getSupportActionBar().setTitle(addressInContact);
+        if (ab != null) ab.setTitle(addressInContact);
 
         pb = (ProgressBar) findViewById(R.id.progress);
         txtNewSms = (TextView) findViewById(R.id.text);
@@ -195,9 +197,10 @@ public class SmsMessageActivity extends ActionBarActivity
             return true;
         }
         else if (id == R.id.action_delete) {
+            final ActionBar ab = getSupportActionBar();
+            final CharSequence title = ab != null ? ab.getTitle() : "";
             new AlertDialog.Builder(this)
-                    .setMessage(getString(R.string.delete_all_messages,
-                            getSupportActionBar().getTitle()))
+                    .setMessage(getString(R.string.delete_all_messages, title))
                     .setCancelable(true)
                     .setNegativeButton(android.R.string.cancel, null)
                     .setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
@@ -448,7 +451,7 @@ public class SmsMessageActivity extends ActionBarActivity
         }
     }
 
-    private BroadcastReceiver mSmsSentReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mSmsSentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             final String rawMsg = intent.getStringExtra("raw");
@@ -482,7 +485,7 @@ public class SmsMessageActivity extends ActionBarActivity
         }
     };
 
-    private BroadcastReceiver mDeleteMessageDoneReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver mDeleteMessageDoneReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (!intent.getBooleanExtra("result", false)) {

@@ -25,9 +25,9 @@ import org.thanthoai.securesms.utils.PasswordManager;
 public class SettingFragment extends PreferenceFragment
         implements Preference.OnPreferenceChangeListener {
 
-    public static final int AUTHENTICATE_CHANGE_AES_PASSPHRASE_CODE = 2609;
-    public static final int AUTHENTICATE_DISABLE_APP_PASSPHRASE_CODE = 2810;
-    public static final int CREATE_NEW_APP_PASSPHRASE_CODE = 1109;
+    private static final int AUTHENTICATE_CHANGE_AES_PASSPHRASE_CODE = 2609;
+    private static final int AUTHENTICATE_DISABLE_APP_PASSPHRASE_CODE = 2810;
+    private static final int CREATE_NEW_APP_PASSPHRASE_CODE = 1109;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -119,7 +119,7 @@ public class SettingFragment extends PreferenceFragment
         SharedPreferences.Editor editor =
                 getPreferenceScreen().getSharedPreferences().edit();
         editor.putBoolean(key, value);
-        editor.commit();
+        editor.apply();
 
         getPreferenceScreen().removeAll();
         loadPrefFromXml();

@@ -62,7 +62,7 @@ public class SmsConversationLoader extends SimpleBaseLoader<List<SmsConversation
         for (SmsConversation conversation : results) {
             List<SentMessageModel> models = SentMessageModel.findByAddress(getContext(),
                     conversation.Address, "date DESC", "1");
-            if (models.isEmpty()) continue;
+            if (models == null || models.isEmpty()) continue;
             final SentMessageModel model = models.get(0);
             if (Long.parseLong(conversation.Date) < Long.parseLong(model.Date)) {
                 conversation.Date = model.Date;

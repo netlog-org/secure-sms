@@ -27,10 +27,10 @@ public class ContactLoader extends SimpleBaseLoader<List<Contact>> {
         List<Contact> results = new ArrayList<>();
         final Uri uri = Contacts.CONTENT_URI;
 
-        final String displayName = (
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-                ? Contacts.DISPLAY_NAME_PRIMARY 
-                : Contacts.DISPLAY_NAME;
+        String displayName = Contacts.DISPLAY_NAME;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            displayName = Contacts.DISPLAY_NAME_PRIMARY;
+        }
         final String[] projections = new String[]{
                 Contacts.HAS_PHONE_NUMBER,
                 Contacts.LOOKUP_KEY,

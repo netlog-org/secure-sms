@@ -13,7 +13,7 @@ public class CacheHelper {
 
     private static CacheHelper sInstance;
 
-    private Hashtable<String, Object> mData = new Hashtable<>();
+    private final Hashtable<String, Object> mData = new Hashtable<>();
 
     private CacheHelper() {}
 

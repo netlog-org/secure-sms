@@ -3,12 +3,15 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <style name="base_toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="android:textColorPrimary">@android:color/white</item>
         <item name="android:textColorSecondary">@android:color/white</item>
         <item name="android:colorForegroundInverse">@android:color/white</item>
+        <item name="android:background">@null</item>
     </style>
 
     <style name="edit_change_passphrase">

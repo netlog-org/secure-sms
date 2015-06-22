@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,7 +47,7 @@ public class SmsConversationActivity extends BasePasswordProtectedActivity
     private ProgressBar pb;
     private View viewListContainer;
 
-    private CacheHelper mCache = CacheHelper.getInstance();
+    private final CacheHelper mCache = CacheHelper.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +56,11 @@ public class SmsConversationActivity extends BasePasswordProtectedActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_base);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle(R.string.app_name);
-        getSupportActionBar().setLogo(R.drawable.action_logo);
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            ab.setTitle(R.string.app_name);
+            ab.setLogo(R.drawable.action_logo);
+        }
 
         pb = (ProgressBar) findViewById(R.id.progress);
         viewListContainer = findViewById(R.id.list_container);

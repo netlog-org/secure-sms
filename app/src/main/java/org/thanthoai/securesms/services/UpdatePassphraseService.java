@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 
-import org.thanthoai.securesms.R;
 import org.thanthoai.securesms.crypto.AESHelper;
 import org.thanthoai.securesms.model.PassphraseModel;
 import org.thanthoai.securesms.model.SentMessageModel;

@@ -11,6 +11,7 @@ import android.view.Window;
 
 import org.thanthoai.securesms.R;
 
+@SuppressWarnings("deprecation")
 public class SettingActivity extends PreferenceActivity
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 

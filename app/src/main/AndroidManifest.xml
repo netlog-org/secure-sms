@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="org.thanthoai.securesms" >
 
     <uses-permission android:name="android.permission.READ_SMS" />
@@ -21,7 +22,8 @@
             android:name="org.thanthoai.securesms.app.SmsMessageActivity"
             android:label="@string/app_name"
             android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
-            android:windowSoftInputMode="stateHidden|adjustUnspecified" >
+            android:windowSoftInputMode="stateHidden|adjustUnspecified"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
@@ -31,7 +33,8 @@
             android:finishOnTaskLaunch="true"
             android:label="@string/app_name"
             android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
-            android:windowSoftInputMode="stateHidden|adjustUnspecified" >
+            android:windowSoftInputMode="stateHidden|adjustUnspecified"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -64,7 +67,8 @@
         <activity
             android:name="org.thanthoai.securesms.setting.SettingWithFragmentActivity"
             android:label="@string/app_name"
-            android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity" >
+            android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.thanthoai.securesms.app.SmsConversationActivity" />

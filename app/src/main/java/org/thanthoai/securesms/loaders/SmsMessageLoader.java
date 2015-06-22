@@ -18,8 +18,8 @@ import java.util.Locale;
 
 public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
 
-    private String mAddress;
-    private String mPassphrase;
+    private final String mAddress;
+    private final String mPassphrase;
 
     public SmsMessageLoader(Context context, String address, String passphrase) {
         super(context);

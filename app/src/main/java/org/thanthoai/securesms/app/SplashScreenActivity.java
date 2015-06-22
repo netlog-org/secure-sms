@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.IntentCompat;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 
 import org.thanthoai.securesms.R;
 import org.thanthoai.securesms.loaders.ContactLoader;
@@ -16,7 +16,7 @@ import org.thanthoai.securesms.utils.CacheHelper;
 import java.util.List;
 
 
-public class SplashScreenActivity extends ActionBarActivity
+public class SplashScreenActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<List<Contact>> {
 
     @Override

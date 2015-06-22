@@ -18,14 +18,14 @@ public class PasswordManager {
                 .getDefaultSharedPreferences(context).edit();
         final String passwordDigest = getPasswordDigest(password);
         editor.putString(Keys.APP_PASSPHRASE, passwordDigest);
-        editor.commit();
+        editor.apply();
     }
 
     public static void removePassword(Context context) {
         SharedPreferences.Editor editor = PreferenceManager
                 .getDefaultSharedPreferences(context).edit();
         editor.remove(Keys.APP_PASSPHRASE);
-        editor.commit();
+        editor.apply();
     }
 
     public static boolean hasPasswordSaved(Context context) {
