@@ -63,3 +63,8 @@ Thumbs.db
 # gedit backup files
 *~
 
+# document files
+*.doc
+*.docx
+*.xls
+*.xlsx
