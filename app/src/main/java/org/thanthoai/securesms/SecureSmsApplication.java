@@ -18,7 +18,7 @@ public class SecureSmsApplication extends Application {
         LogConfigurator logConfigurator = new LogConfigurator();
         logConfigurator.setFileName(Environment.getExternalStorageDirectory()
                 + File.separator
-                + getString(R.string.app_name)
+                + getString(R.string.app_name).replace(" ", "")
                 + File.separator + "logs"
                 + File.separator + "log4j.txt");
         logConfigurator.setRootLevel(Level.DEBUG);
