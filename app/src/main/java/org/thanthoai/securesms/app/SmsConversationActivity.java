@@ -65,20 +65,18 @@ public class SmsConversationActivity extends BasePasswordProtectedActivity
         viewListContainer = findViewById(R.id.list_container);
 
         mAdapter = new SmsListAdapter(this, R.layout.view_list_sms_item_1);
+
         final ListView listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 final SmsConversation conversation = mAdapter.getItem(position);
-                final String passphrase;
-                PassphraseModel model = PassphraseModel.findByAddress(
+
+                final PassphraseModel model = PassphraseModel.findByAddress(
                         SmsConversationActivity.this, conversation.Address);
-                if (model != null) {
-                    passphrase = AESHelper.decryptFromBase64(getAppPassphrase(),
-                            model.Passphrase);
-                } else {
-                    passphrase = Global.DEFAULT_PASSPHRASE;
-                }
+                final String passphrase = (model != null)
+                        ? AESHelper.decryptFromBase64(getAppPassphrase(), model.Passphrase)
+                        : Global.DEFAULT_PASSPHRASE;
 
                 Intent i = new Intent(SmsConversationActivity.this, SmsMessageActivity.class);
                 i.putExtra("address", conversation.Address);
