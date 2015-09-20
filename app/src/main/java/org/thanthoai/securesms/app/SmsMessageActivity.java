@@ -308,39 +308,6 @@ public class SmsMessageActivity extends AppCompatActivity
         Global.log("Sms content loader reset");
     }
 
-    @SuppressWarnings("unchecked")
-    private void showChooseContactDialog() {
-        final List<SmsConversation> list = (List<SmsConversation>)
-                CacheHelper.getInstance().get("sms");
-        if (list == null) return;
-        final String[] items = new String[list.size()];
-        int i = 0;
-        for (SmsConversation obj : list) {
-            items[i++] = (obj.AddressInContact != null)
-                    ? obj.AddressInContact : obj.Address;
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, items);
-
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.app_name)
-                .setCancelable(true)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setAdapter(adapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
-                        Intent i = new Intent(SmsMessageActivity.this, SmsMessageActivity.class);
-                        i.putExtra("content", sms.Content);
-                        i.putExtra("address", list.get(which).Address);
-                        i.putExtra("addressInContact", list.get(which).AddressInContact);
-                        i.putExtra("passphrase", mPassphrase);
-                        i.putExtra(Keys.APP_PASSPHRASE, mAppPassphrase);
-                        startActivity(i);
-                    }
-                }).show();
-    }
-
     @SuppressWarnings("deprecation")
     private void copyToClipboard() {
         if (mCurrentPosLongClick < 0) return;
