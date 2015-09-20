@@ -43,8 +43,8 @@ public class ContactLoader extends SimpleBaseLoader<List<Contact>> {
             if (c1.getInt(c1.getColumnIndex(Contacts.HAS_PHONE_NUMBER)) == 0) {
                 continue;
             }
-            Contact object = new Contact();
-            object.DisplayName = c1.getString(c1.getColumnIndex(displayName));
+            Contact contact = new Contact();
+            contact.DisplayName = c1.getString(c1.getColumnIndex(displayName));
 
             String lookUpKey = c1.getString(c1.getColumnIndex(Contacts.LOOKUP_KEY));
             Cursor c2 = getContext().getContentResolver().query(
@@ -65,14 +65,14 @@ public class ContactLoader extends SimpleBaseLoader<List<Contact>> {
                 int type = c2.getInt(c2.getColumnIndex(CommonDataKinds.Phone.TYPE));
                 String typeText = getContext().getResources().getString(
                         CommonDataKinds.Phone.getTypeLabelResource(type));
-                if (object.PhoneNumbers.isEmpty()) {
-                    object.PrimaryNumber = phone;
+                if (contact.PhoneNumbers.isEmpty()) {
+                    contact.PrimaryNumber = phone;
                 }
-                object.PhoneNumbers.put(phone, typeText);
+                contact.PhoneNumbers.put(phone, typeText);
             }
             c2.close();
-            if (!object.PhoneNumbers.isEmpty()) {
-                results.add(object);
+            if (!contact.PhoneNumbers.isEmpty()) {
+                results.add(contact);
             }
         }
         c1.close();
