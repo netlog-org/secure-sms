@@ -43,6 +43,7 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
                 if (updatePassphrase(mAddresses.get(frag.getSpinner().getSelectedItemPosition()))) {
                     pd.show();
                 }
+                clearFields();
             }
         });
         frag.setOnCancelListener(new DoneCancelBarFragment.OnCancelClickListener() {

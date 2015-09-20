@@ -73,6 +73,12 @@ public abstract class BasePassphraseActivity extends AppCompatActivity {
         return true;
     }
 
+    protected void clearFields() {
+        editOld.setText("");
+        editNew1.setText("");
+        editNew2.setText("");
+    }
+
     @SuppressWarnings("unused")
     protected void onUpdatePassphraseDone(Intent data) {
         if (pd.isShowing()) pd.dismiss();
