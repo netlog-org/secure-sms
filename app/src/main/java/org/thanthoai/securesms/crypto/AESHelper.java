@@ -4,16 +4,14 @@ import android.util.Base64;
 
 import org.thanthoai.securesms.utils.Global;
 
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 
-import javax.crypto.*;
+import javax.crypto.Cipher;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -49,17 +47,10 @@ public class AESHelper {
             byte[] cipherBytes = cipher.doFinal(plainText.getBytes("UTF-8"));
 
             return toBase64(salt) + SPLITTER + toBase64(iv) + SPLITTER + toBase64(cipherBytes);
-        } catch (NoSuchAlgorithmException
-                | NoSuchPaddingException
-                | IllegalBlockSizeException
-                | BadPaddingException
-                | InvalidAlgorithmParameterException
-                | InvalidKeyException
-                | InvalidKeySpecException
-                | UnsupportedEncodingException e)
-        {
+        } catch (Exception e) {
             Global.error("AES-exception", e);
         }
+
         return null;
     }
 
@@ -87,18 +78,10 @@ public class AESHelper {
             byte[] plaintext = cipher.doFinal(cipherBytes);
 
             return new String(plaintext , "UTF-8");
-        } catch (NoSuchAlgorithmException
-                | NoSuchPaddingException
-                | IllegalBlockSizeException
-                | BadPaddingException
-                | InvalidAlgorithmParameterException
-                | InvalidKeyException
-                | InvalidKeySpecException
-                | IllegalArgumentException
-                | UnsupportedEncodingException e)
-        {
+        } catch (Exception e) {
             Global.error("AES-exception", e);
         }
+
         return null;
     }
 
