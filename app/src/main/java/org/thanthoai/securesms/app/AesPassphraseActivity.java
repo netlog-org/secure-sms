@@ -106,9 +106,11 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
                 : R.string.update_passphrase_failure;
         Toast.makeText(getApplicationContext(), resId, Toast.LENGTH_SHORT).show();
 
-        data.putExtra("passphrase", editNew1.getText().toString());
-        setResult(ok ? RESULT_OK : RESULT_CANCELED, data);
-        if (mMode == MODE_SINGLE) finish();
+        if (mMode == MODE_SINGLE) {
+            data.putExtra("passphrase", editNew1.getText().toString());
+            setResult(ok ? RESULT_OK : RESULT_CANCELED, data);
+            finish();
+        }
     }
 
     private boolean updatePassphrase(String address) {
