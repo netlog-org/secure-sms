@@ -88,10 +88,10 @@ public class SmsMessageActivity extends AppCompatActivity
         final Intent i = getIntent();
         mPassphrase = i.getStringExtra("passphrase");
         mAppPassphrase = i.getStringExtra(Keys.APP_PASSPHRASE);
-        if (BuildConfig.DEBUG) {
-            if (mPassphrase == null || mAppPassphrase == null)
-                throw new AssertionError();
+        if (BuildConfig.DEBUG && mPassphrase == null || mAppPassphrase == null) {
+            throw new AssertionError("Not found encrypt passphrase or app passphrase");
         }
+
         mAddress = i.getStringExtra("address");
         String addressInContact = i.getStringExtra("addressInContact");
         if (addressInContact == null) {
@@ -101,6 +101,7 @@ public class SmsMessageActivity extends AppCompatActivity
 
         pb = (ProgressBar) findViewById(R.id.progress);
         txtNewSms = (TextView) findViewById(R.id.text);
+        txtNewSms.setHint(getString(R.string.type_message_hint, mAddress));
         final String content = i.getStringExtra("content");
         if (content != null) {
             txtNewSms.setText(content);

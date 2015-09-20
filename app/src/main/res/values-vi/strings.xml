@@ -1,5 +1,5 @@
 <resources>
-    <string name="type_message_hint">Nhập tin nhắn</string>
+    <string name="type_message_hint">Gửi SMS tới %s</string>
     <string name="action_add">Tin nhắn mới</string>
     <string name="action_settings">Cài đặt</string>
     <string name="search_hint">Nhập tên hoặc số điện thoại</string>
