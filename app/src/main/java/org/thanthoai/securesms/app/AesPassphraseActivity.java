@@ -3,6 +3,7 @@ package org.thanthoai.securesms.app;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import org.thanthoai.securesms.R;
@@ -34,6 +35,7 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
 
         final DoneCancelBarFragment frag = (DoneCancelBarFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_done_cancel);
+
         frag.setMode(DoneCancelBarFragment.MODE_NAVIGATION);
         frag.setOnDoneListener(new DoneCancelBarFragment.OnDoneClickListener() {
             @Override
@@ -50,16 +52,23 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
                 finish();
             }
         });
+        frag.getSpinner().setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateUiWhenAddressChanged(mAddresses.get(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         String address = getIntent().getStringExtra(Keys.ADDRESS);
         mAppPassphrase = getIntent().getStringExtra(Keys.APP_PASSPHRASE);
         mMode = (address != null) ? MODE_SINGLE : MODE_MULTIPLE;
 
         if (mMode == MODE_SINGLE) {
-            if (PassphraseModel.findByAddress(this, address) == null) {
-                editOld.setText(mAppPassphrase);
-                editOld.setVisibility(View.GONE);
-            }
             frag.setDropdownItems(new String[]{address});
             mAddresses.add(address);
         } else {
@@ -84,11 +93,14 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
             frag.setDropdownItems(itemArr);
             frag.setCancelIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
         }
+
+        updateUiWhenAddressChanged(mAddresses.get(0));
     }
 
     @Override
     protected void onUpdatePassphraseDone(Intent data) {
         super.onUpdatePassphraseDone(data);
+
         final boolean ok = data.getBooleanExtra("result", false);
         int resId = (ok) ? R.string.update_passphrase_success
                 : R.string.update_passphrase_failure;
@@ -123,14 +135,18 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
         return false;
     }
 
-    private boolean checkCurrentPassphraseValid(String address, String passphrase,
-                                                String appPassphrase) {
+    private boolean checkCurrentPassphraseValid(String address, String passphrase, String appPassphrase) {
         PassphraseModel model = PassphraseModel.findByAddress(this, address);
         if (model != null) {
-            final String plainPassphrase = AESHelper.decryptFromBase64(appPassphrase,
+            final String passphraseInDb = AESHelper.decryptFromBase64(appPassphrase,
                     model.Passphrase.replace(Global.MESSAGE_PREFIX, ""));
-            return plainPassphrase != null && plainPassphrase.equals(passphrase);
+            return passphraseInDb != null && passphraseInDb.equals(passphrase);
         }
         return true;
+    }
+
+    private void updateUiWhenAddressChanged(String address) {
+        PassphraseModel model = PassphraseModel.findByAddress(AesPassphraseActivity.this, address);
+        editOld.setVisibility(model != null ? View.VISIBLE : View.GONE);
     }
 }
