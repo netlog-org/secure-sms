@@ -113,11 +113,11 @@ public class UpdatePassphraseService extends IntentService {
             while (c.moveToNext()) {
                 final String _id = String.valueOf(c.getInt(c.getColumnIndex("_id")));
                 String body = c.getString(c.getColumnIndex("body"));
-                if (body.startsWith(Global.MESSAGE_PREFIX)) {
+                if (body.startsWith(Global.AES_PREFIX)) {
                     final String plain = AESHelper.decryptFromBase64(oldPassphrase,
-                            body.replace(Global.MESSAGE_PREFIX, ""));
+                            body.replace(Global.AES_PREFIX, ""));
                     if (plain == null) continue;
-                    body = Global.MESSAGE_PREFIX + AESHelper.encryptToBase64(
+                    body = Global.AES_PREFIX + AESHelper.encryptToBase64(
                             newPassphrase, plain);
 
                     ContentValues values = new ContentValues(1);
@@ -144,9 +144,9 @@ public class UpdatePassphraseService extends IntentService {
         List<SentMessageModel> models = SentMessageModel.findByAddress(this, address);
         for (SentMessageModel model : models) {
             final String plain = AESHelper.decryptFromBase64(oldPassphrase,
-                    model.Body.replace(Global.MESSAGE_PREFIX, ""));
+                    model.Body.replace(Global.AES_PREFIX, ""));
             if (plain == null) continue;
-            model.Body = Global.MESSAGE_PREFIX + AESHelper.encryptToBase64(
+            model.Body = Global.AES_PREFIX + AESHelper.encryptToBase64(
                     newPassphrase, plain);
             if (!model.update(this)) {
                 Global.error("Update encrypted message in local database error." +

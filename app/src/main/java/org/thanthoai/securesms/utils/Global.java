@@ -7,7 +7,7 @@ import java.util.List;
 public class Global {
 
     public static final String DEFAULT_PASSPHRASE = "%1q2W3e4R5ta@_[}&#";
-    public static final String MESSAGE_PREFIX = "$]";
+    public static final String AES_PREFIX = "$]";
 
     public static long sLastTimeLeave = 0;
     public static final long TIME_NEED_RE_AUTHENTICATE = 10000l; // 30 seconds

@@ -415,7 +415,7 @@ public class SmsMessageActivity extends AppCompatActivity
             if (!PhoneNumberUtils.isWellFormedSmsAddress(mAddress))
                 throw new RuntimeException("Not have well formed sms address");
 
-            cipherText = Global.MESSAGE_PREFIX + cipherText;
+            cipherText = Global.AES_PREFIX + cipherText;
             Intent i = new Intent(INTENT_SMS_SENT);
             i.putExtra("raw", msg);
             i.putExtra("encrypted", cipherText);

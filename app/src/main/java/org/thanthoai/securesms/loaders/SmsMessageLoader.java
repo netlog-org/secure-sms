@@ -101,9 +101,9 @@ public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
         }
         sms.Date = c.getString(c.getColumnIndex("date"));
         String content = c.getString(c.getColumnIndex("body"));
-        if (content.startsWith(Global.MESSAGE_PREFIX)) {
+        if (content.startsWith(Global.AES_PREFIX)) {
             content = AESHelper.decryptFromBase64(mPassphrase,
-                    content.replace(Global.MESSAGE_PREFIX, ""));
+                    content.replace(Global.AES_PREFIX, ""));
         }
         sms.Content = content;
         return sms;
@@ -115,7 +115,7 @@ public class SmsMessageLoader extends SimpleBaseLoader<List<SmsMessage>> {
         sms.Id = (int) model._Id;
         sms.Date = model.Date;
         sms.Content = AESHelper.decryptFromBase64(mPassphrase,
-                model.Body.replace(Global.MESSAGE_PREFIX, ""));
+                model.Body.replace(Global.AES_PREFIX, ""));
         return sms;
     }
 }

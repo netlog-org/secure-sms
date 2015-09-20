@@ -142,14 +142,14 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
         PassphraseModel model = PassphraseModel.findByAddress(this, address);
         if (model != null) {
             final String passphraseInDb = AESHelper.decryptFromBase64(appPassphrase,
-                    model.Passphrase.replace(Global.MESSAGE_PREFIX, ""));
+                    model.Passphrase.replace(Global.AES_PREFIX, ""));
             return passphraseInDb != null && passphraseInDb.equals(passphrase);
         }
         return true;
     }
 
     private void updateUiWhenAddressChanged(String address) {
-        PassphraseModel model = PassphraseModel.findByAddress(AesPassphraseActivity.this, address);
+        PassphraseModel model = PassphraseModel.findByAddress(this, address);
         editOld.setVisibility(model != null ? View.VISIBLE : View.GONE);
     }
 }
