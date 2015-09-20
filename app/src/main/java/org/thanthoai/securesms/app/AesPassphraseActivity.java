@@ -150,6 +150,13 @@ public class AesPassphraseActivity extends BasePassphraseActivity {
 
     private void updateUiWhenAddressChanged(String address) {
         PassphraseModel model = PassphraseModel.findByAddress(this, address);
-        editOld.setVisibility(model != null ? View.VISIBLE : View.GONE);
+        if (model != null) {
+            editOld.setVisibility(View.VISIBLE);
+            editOld.setText("");
+        } else {
+            editOld.setVisibility(View.GONE);
+            editOld.setText(Global.DEFAULT_PASSPHRASE);
+
+        }
     }
 }
