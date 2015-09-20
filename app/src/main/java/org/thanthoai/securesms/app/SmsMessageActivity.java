@@ -60,7 +60,7 @@ import java.util.List;
 public class SmsMessageActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<List<SmsMessage>> {
 
-    private static final String INTENT_SMS_SENT = "org.anhtn.securesms.INTENT_SMS_SENT";
+    private static final String INTENT_SMS_SENT = "org.thanthoai.securesms.INTENT_SMS_SENT";
     private static final int UPDATE_PASSPHRASE_REQUEST_CODE = 0xaecf;
 
     private static final int MENU_COPY_ID = 123;

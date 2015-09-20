@@ -16,7 +16,7 @@ import java.util.Locale;
 
 public class DeleteMessageService extends IntentService {
 
-    public static final String DELETE_MESSAGE_DONE = "delete.message.do";
+    public static final String DELETE_MESSAGE_DONE = "delete.message.done";
 
     public DeleteMessageService() {
         super("DeleteMessageService");
