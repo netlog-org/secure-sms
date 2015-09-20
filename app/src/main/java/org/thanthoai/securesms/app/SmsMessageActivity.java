@@ -215,8 +215,7 @@ public class SmsMessageActivity extends AppCompatActivity
             Intent intent = new Intent(Intents.Insert.ACTION);
             intent.setType(RawContacts.CONTENT_TYPE);
             intent.putExtra(Intents.Insert.PHONE, mAddress);
-            intent.putExtra(Intents.Insert.PHONE_TYPE,
-                    CommonDataKinds.Phone.TYPE_MOBILE);
+            intent.putExtra(Intents.Insert.PHONE_TYPE, CommonDataKinds.Phone.TYPE_MOBILE);
             startActivity(intent);
             return true;
         }
@@ -228,8 +227,7 @@ public class SmsMessageActivity extends AppCompatActivity
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent i = new Intent(SmsMessageActivity.this,
-                                    AesPassphraseActivity.class);
+                            Intent i = new Intent(SmsMessageActivity.this, AesPassphraseActivity.class);
                             i.putExtra("app_passphrase", mAppPassphrase);
                             i.putExtra("address", mAddress);
                             startActivityForResult(i, UPDATE_PASSPHRASE_REQUEST_CODE);
@@ -331,8 +329,7 @@ public class SmsMessageActivity extends AppCompatActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
-                        Intent i = new Intent(SmsMessageActivity.this,
-                                SmsMessageActivity.class);
+                        Intent i = new Intent(SmsMessageActivity.this, SmsMessageActivity.class);
                         i.putExtra("content", sms.Content);
                         i.putExtra("address", list.get(which).Address);
                         i.putExtra("addressInContact", list.get(which).AddressInContact);
@@ -376,8 +373,7 @@ public class SmsMessageActivity extends AppCompatActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 0) {
-                            SmsMessageActivity self = SmsMessageActivity.this;
-                            Intent i = new Intent(self, ContactActivity.class);
+                            Intent i = new Intent(SmsMessageActivity.this, ContactActivity.class);
                             i.putExtra(Keys.APP_PASSPHRASE, mAppPassphrase);
                             i.putExtra("content",mAdapter.getItem(mCurrentPosLongClick).Content);
                             startActivity(i);
