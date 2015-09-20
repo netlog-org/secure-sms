@@ -323,7 +323,7 @@ public class SmsMessageActivity extends AppCompatActivity
                 android.R.layout.simple_list_item_1, items);
 
         new AlertDialog.Builder(this)
-                .setTitle(R.string.action_add)
+                .setTitle(R.string.app_name)
                 .setCancelable(true)
                 .setNegativeButton(android.R.string.cancel, null)
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
@@ -359,28 +359,41 @@ public class SmsMessageActivity extends AppCompatActivity
 
     @SuppressWarnings("unchecked")
     private void forwardMessage() {
-        final String[] items = new String[]{
-                getString(R.string.action_add),
-                getString(R.string.recent_list)
-        };
+        final List<SmsConversation> list = (List<SmsConversation>)
+                CacheHelper.getInstance().get("sms");
+        if (list == null) return;
+        final String[] items = new String[list.size()];
+        int i = 0;
+        for (SmsConversation obj : list) {
+            items[i++] = (obj.AddressInContact != null)
+                    ? obj.AddressInContact : obj.Address;
+        }
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, items);
 
         new AlertDialog.Builder(this)
-                .setTitle(R.string.action_add)
+                .setTitle(R.string.app_name)
                 .setCancelable(true)
-                .setNegativeButton(android.R.string.cancel, null)
+                .setNegativeButton(R.string.new_sms, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Intent i = new Intent(SmsMessageActivity.this, ContactActivity.class);
+                        i.putExtra(Keys.APP_PASSPHRASE, mAppPassphrase);
+                        i.putExtra("content",mAdapter.getItem(mCurrentPosLongClick).Content);
+                        startActivity(i);
+                    }
+                })
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (which == 0) {
-                            Intent i = new Intent(SmsMessageActivity.this, ContactActivity.class);
-                            i.putExtra(Keys.APP_PASSPHRASE, mAppPassphrase);
-                            i.putExtra("content",mAdapter.getItem(mCurrentPosLongClick).Content);
-                            startActivity(i);
-                        } else {
-                            showChooseContactDialog();
-                        }
+                        SmsMessage sms = mAdapter.getItem(mCurrentPosLongClick);
+                        Intent i = new Intent(SmsMessageActivity.this, SmsMessageActivity.class);
+                        i.putExtra("content", sms.Content);
+                        i.putExtra("address", list.get(which).Address);
+                        i.putExtra("addressInContact", list.get(which).AddressInContact);
+                        i.putExtra("passphrase", mPassphrase);
+                        i.putExtra(Keys.APP_PASSPHRASE, mAppPassphrase);
+                        startActivity(i);
                     }
                 }).show();
     }
