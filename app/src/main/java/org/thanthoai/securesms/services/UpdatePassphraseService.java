@@ -14,7 +14,7 @@ import org.thanthoai.securesms.utils.Country;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
 import org.thanthoai.securesms.utils.Keys;
-import org.thanthoai.securesms.utils.PasswordManager;
+import org.thanthoai.securesms.utils.AppPassphraseManager;
 import org.thanthoai.securesms.utils.PhoneNumberConverterFactory;
 
 import java.util.List;
@@ -63,9 +63,9 @@ public class UpdatePassphraseService extends IntentService {
             }
             if (ok) {
                 if (newPassphrase.equals(Global.DEFAULT_PASSPHRASE))
-                    PasswordManager.removePassword(this);
+                    AppPassphraseManager.clear(this);
                 else
-                    PasswordManager.storePassword(this, newPassphrase);
+                    AppPassphraseManager.store(this, newPassphrase);
             }
         }
 

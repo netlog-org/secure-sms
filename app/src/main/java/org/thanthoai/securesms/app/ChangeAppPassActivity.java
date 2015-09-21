@@ -10,9 +10,9 @@ import org.thanthoai.securesms.fragments.DoneCancelBarFragment;
 import org.thanthoai.securesms.services.UpdatePassphraseService;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
-import org.thanthoai.securesms.utils.PasswordManager;
+import org.thanthoai.securesms.utils.AppPassphraseManager;
 
-public class AppPassphraseActivity extends BasePassphraseActivity {
+public class ChangeAppPassActivity extends BaseChangePassActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public class AppPassphraseActivity extends BasePassphraseActivity {
         final DoneCancelBarFragment frag = (DoneCancelBarFragment)
                 getSupportFragmentManager().findFragmentById(R.id.fragment_done_cancel);
         frag.setMode(DoneCancelBarFragment.MODE_NORMAL);
-        frag.setTitleInNormalMode(R.string.pref_change_password_title);
+        frag.setTitleInNormalMode(R.string.pref_change_app_pass_title);
         frag.setOnDoneListener(new DoneCancelBarFragment.OnDoneClickListener() {
             @Override
             public void onClick(View v) {
@@ -36,7 +36,7 @@ public class AppPassphraseActivity extends BasePassphraseActivity {
             }
         });
 
-        if (!PasswordManager.hasPasswordSaved(this)) {
+        if (!AppPassphraseManager.isExists(this)) {
             editOld.setVisibility(View.GONE);
             editOld.setText(Global.DEFAULT_PASSPHRASE);
         }
@@ -57,7 +57,7 @@ public class AppPassphraseActivity extends BasePassphraseActivity {
         final String textOld = editOld.getText().toString();
         final String textNew = editNew1.getText().toString();
 
-        if (PasswordManager.isPasswordMatched(this, textOld)) {
+        if (AppPassphraseManager.isMatched(this, textOld)) {
             Intent i = new Intent(this, UpdatePassphraseService.class);
             i.setAction(UpdatePassphraseService.ACTION_UPDATE_APP_PASSPHRASE);
             i.putExtra(Keys.OLD_PASSPHRASE, textOld);

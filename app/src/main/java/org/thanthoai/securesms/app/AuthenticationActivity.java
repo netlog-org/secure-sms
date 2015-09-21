@@ -12,7 +12,7 @@ import org.thanthoai.securesms.R;
 import org.thanthoai.securesms.fragments.DoneCancelBarFragment;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
-import org.thanthoai.securesms.utils.PasswordManager;
+import org.thanthoai.securesms.utils.AppPassphraseManager;
 
 public class AuthenticationActivity extends AppCompatActivity {
 
@@ -21,7 +21,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
-        final EditText editPassword = (EditText) findViewById(R.id.edit_passphrase);
+        final EditText editPass = (EditText) findViewById(R.id.edit_passphrase);
         final TextView textResult = (TextView) findViewById(R.id.text_error);
 
         final DoneCancelBarFragment frag = (DoneCancelBarFragment)
@@ -29,9 +29,9 @@ public class AuthenticationActivity extends AppCompatActivity {
         frag.setOnDoneListener(new DoneCancelBarFragment.OnDoneClickListener() {
             @Override
             public void onClick(View v) {
-                final String passphrase = editPassword.getText().toString();
+                final String passphrase = editPass.getText().toString();
                 if (passphrase.length() == 0) return;
-                final boolean matched = PasswordManager.isPasswordMatched(
+                final boolean matched = AppPassphraseManager.isMatched(
                         AuthenticationActivity.this, passphrase);
                 if (matched) {
                     Intent i = new Intent();
@@ -41,7 +41,7 @@ public class AuthenticationActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(AuthenticationActivity.this,
                             R.string.current_passphrase_incorrect, Toast.LENGTH_SHORT).show();
-                    editPassword.setText("");
+                    editPass.setText("");
                     textResult.setVisibility(View.VISIBLE);
                 }
             }
@@ -54,7 +54,7 @@ public class AuthenticationActivity extends AppCompatActivity {
             }
         });
         frag.setMode(DoneCancelBarFragment.MODE_NORMAL);
-        frag.setTitleInNormalMode(R.string.enter_password);
+        frag.setTitleInNormalMode(R.string.enter_passphrase);
     }
 
     @Override

@@ -14,7 +14,7 @@ import android.widget.Toast;
 import org.thanthoai.securesms.R;
 import org.thanthoai.securesms.services.UpdatePassphraseService;
 
-public abstract class BasePassphraseActivity extends AppCompatActivity {
+public abstract class BaseChangePassActivity extends AppCompatActivity {
 
     protected EditText editOld, editNew1, editNew2;
     protected ProgressDialog pd;

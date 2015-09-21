@@ -39,7 +39,7 @@ import org.thanthoai.securesms.utils.Keys;
 import java.util.List;
 
 
-public class SmsConversationActivity extends BasePasswordProtectedActivity
+public class SmsConversationActivity extends BaseProtectedActivity
         implements LoaderManager.LoaderCallbacks<List<SmsConversation>>{
 
     private SmsListAdapter mAdapter;

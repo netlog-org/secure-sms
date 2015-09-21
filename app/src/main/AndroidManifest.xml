@@ -55,7 +55,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="org.thanthoai.securesms.app.AesPassphraseActivity"
+            android:name=".app.ChangeAesPassActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
@@ -82,7 +82,7 @@
             android:windowSoftInputMode="stateVisible|adjustResize" >
         </activity>
         <activity
-            android:name="org.thanthoai.securesms.app.AppPassphraseActivity"
+            android:name=".app.ChangeAppPassActivity"
             android:label="@string/app_name" >
         </activity>
 

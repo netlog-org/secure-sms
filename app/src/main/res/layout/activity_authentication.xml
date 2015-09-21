@@ -30,7 +30,7 @@
 
             <EditText
                 style="@style/edit_change_passphrase"
-                android:hint="@string/enter_password"
+                android:hint="@string/enter_passphrase"
                 android:id="@+id/edit_passphrase" />
 
             <TextView

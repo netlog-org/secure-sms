@@ -10,18 +10,18 @@
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="use_password"
-            android:summary="@string/pref_use_password_summary"
-            android:title="@string/pref_use_password_title" />
+            android:summary="@string/pref_use_app_pass_summary"
+            android:title="@string/pref_use_app_pass_title" />
 
         <Preference
-            android:title="@string/pref_change_password_title"
+            android:title="@string/pref_change_app_pass_title"
             android:dependency="use_password"
-            android:summary="@string/pref_change_password_summary"
+            android:summary="@string/pref_change_app_pass_summary"
             android:key="change_password" />
 
         <Preference
-            android:title="@string/pref_change_passphrase_title"
-            android:summary="@string/pref_change_passphrase_summary"
+            android:title="@string/pref_change_aes_pass_title"
+            android:summary="@string/pref_change_aes_pass_summary"
             android:key="change_passphrase" />
     </PreferenceCategory>
 </PreferenceScreen>

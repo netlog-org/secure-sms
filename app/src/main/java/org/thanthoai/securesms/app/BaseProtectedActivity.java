@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
 
-public abstract class BasePasswordProtectedActivity extends AppCompatActivity {
+public abstract class BaseProtectedActivity extends AppCompatActivity {
 
     private String mAppPassphrase;
 

@@ -19,7 +19,7 @@ import org.thanthoai.securesms.utils.Keys;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AesPassphraseActivity extends BasePassphraseActivity {
+public class ChangeAesPassActivity extends BaseChangePassActivity {
 
     static final int MODE_SINGLE = 1;
     static final int MODE_MULTIPLE = 2;

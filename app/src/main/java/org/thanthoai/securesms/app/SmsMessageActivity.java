@@ -228,7 +228,7 @@ public class SmsMessageActivity extends AppCompatActivity
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Intent i = new Intent(SmsMessageActivity.this, AesPassphraseActivity.class);
+                            Intent i = new Intent(SmsMessageActivity.this, ChangeAesPassActivity.class);
                             i.putExtra("app_passphrase", mAppPassphrase);
                             i.putExtra("address", mAddress);
                             startActivityForResult(i, UPDATE_PASSPHRASE_REQUEST_CODE);

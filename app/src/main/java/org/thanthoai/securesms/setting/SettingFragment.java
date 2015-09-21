@@ -12,13 +12,13 @@ import android.preference.PreferenceScreen;
 import android.support.annotation.Nullable;
 
 import org.thanthoai.securesms.R;
-import org.thanthoai.securesms.app.AesPassphraseActivity;
-import org.thanthoai.securesms.app.AppPassphraseActivity;
+import org.thanthoai.securesms.app.ChangeAesPassActivity;
+import org.thanthoai.securesms.app.ChangeAppPassActivity;
 import org.thanthoai.securesms.app.AuthenticationActivity;
 import org.thanthoai.securesms.services.UpdatePassphraseService;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
-import org.thanthoai.securesms.utils.PasswordManager;
+import org.thanthoai.securesms.utils.AppPassphraseManager;
 
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -45,7 +45,7 @@ public class SettingFragment extends PreferenceFragment
                 .getBoolean(Keys.PREF_ENABLE_APP_PASSPHRASE, false);
 
         if (Keys.PREF_CHANGE_APP_PASSPHRASE.equalsIgnoreCase(preference.getKey())) {
-            Intent i = new Intent(getActivity(), AppPassphraseActivity.class);
+            Intent i = new Intent(getActivity(), ChangeAppPassActivity.class);
             startActivity(i);
         }
         else if (Keys.PREF_CHANGE_AES_PASSPHRASE.equalsIgnoreCase(preference.getKey())) {
@@ -89,12 +89,12 @@ public class SettingFragment extends PreferenceFragment
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (Keys.PREF_ENABLE_APP_PASSPHRASE.equalsIgnoreCase(preference.getKey())) {
             if ((boolean) newValue) {
-                if (!PasswordManager.hasPasswordSaved(getActivity())) {
-                    Intent i = new Intent(getActivity(), AppPassphraseActivity.class);
+                if (!AppPassphraseManager.isExists(getActivity())) {
+                    Intent i = new Intent(getActivity(), ChangeAppPassActivity.class);
                     startActivityForResult(i, CREATE_NEW_APP_PASSPHRASE_CODE);
                 }
             } else {
-                if (PasswordManager.hasPasswordSaved(getActivity())) {
+                if (AppPassphraseManager.isExists(getActivity())) {
                     Intent i = new Intent(getActivity(), AuthenticationActivity.class);
                     startActivityForResult(i, AUTHENTICATE_DISABLE_APP_PASSPHRASE_CODE);
                 }
@@ -105,7 +105,7 @@ public class SettingFragment extends PreferenceFragment
     }
 
     private void startAesPassphraseActivity(String appPassphrase) {
-        Intent i = new Intent(getActivity(), AesPassphraseActivity.class);
+        Intent i = new Intent(getActivity(), ChangeAesPassActivity.class);
         i.putExtra(Keys.APP_PASSPHRASE, appPassphrase);
         startActivity(i);
     }
