@@ -14,16 +14,15 @@ import java.security.NoSuchAlgorithmException;
 public class PasswordManager {
 
     public static void storePassword(Context context, String password) {
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         final String passwordDigest = getPasswordDigest(password);
         editor.putString(Keys.APP_PASSPHRASE, passwordDigest);
         editor.apply();
+        Global.error("Store sha1 app passphrase: " + passwordDigest);
     }
 
     public static void removePassword(Context context) {
-        SharedPreferences.Editor editor = PreferenceManager
-                .getDefaultSharedPreferences(context).edit();
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
         editor.remove(Keys.APP_PASSPHRASE);
         editor.apply();
     }
@@ -36,6 +35,8 @@ public class PasswordManager {
     public static boolean isPasswordMatched(Context context, String password) {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         final String passDigestSaved = pref.getString(Keys.APP_PASSPHRASE, null);
+        Global.error("Sha1 app passphrase in db: " + passDigestSaved +
+                ", Sha1 from passphrase: " + getPasswordDigest(password));
         return passDigestSaved == null
                 || passDigestSaved.equals(getPasswordDigest(password));
     }
@@ -45,7 +46,7 @@ public class PasswordManager {
             final MessageDigest md = MessageDigest.getInstance("SHA-1");
             md.reset();
             md.update(password.getBytes("UTF-8"));
-            return Base64.encodeToString(md.digest(), Base64.DEFAULT);
+            return Base64.encodeToString(md.digest(), Base64.NO_WRAP);
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             if (BuildConfig.DEBUG) throw new AssertionError();
         }
