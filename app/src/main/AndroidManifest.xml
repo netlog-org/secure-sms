@@ -60,14 +60,7 @@
             android:windowSoftInputMode="stateHidden|adjustResize" >
         </activity>
         <activity
-            android:name="org.thanthoai.securesms.setting.SettingActivity"
-            android:label="@string/app_name" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
-        </activity>
-        <activity
-            android:name="org.thanthoai.securesms.setting.SettingWithFragmentActivity"
+            android:name=".app.SettingActivity"
             android:label="@string/app_name"
             android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
             tools:ignore="UnusedAttribute">

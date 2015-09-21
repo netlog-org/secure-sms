@@ -1,41 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="?attr/colorPrimary"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="org.thanthoai.securesms.app.SettingActivity">
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:background="@color/app_background"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+    <include layout="@layout/view_toolbar_base" />
 
-        <ImageButton
-            android:id="@+id/home"
-            android:contentDescription="@null"
-            android:background="@drawable/flat_button_material"
-            android:src="@drawable/abc_ic_ab_back_mtrl_am_alpha"
-            android:layout_width="?attr/actionBarSize"
-            android:layout_height="match_parent" />
-
-        <TextView
-            android:text="@string/action_settings"
-            android:textSize="18sp"
-            android:textColor="@android:color/white"
-            android:gravity="center_vertical"
-            android:layout_marginLeft="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </LinearLayout>
-
-    <ListView
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:id="@android:id/list"
+    <fragment
+        android:name="org.thanthoai.securesms.fragments.SettingFragment"
+        android:tag="setting"
+        android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</LinearLayout>
+</RelativeLayout>

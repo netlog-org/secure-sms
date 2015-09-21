@@ -5,7 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -30,8 +29,6 @@ import org.thanthoai.securesms.crypto.AESHelper;
 import org.thanthoai.securesms.loaders.SmsConversationLoader;
 import org.thanthoai.securesms.model.PassphraseModel;
 import org.thanthoai.securesms.model.SmsConversation;
-import org.thanthoai.securesms.setting.SettingActivity;
-import org.thanthoai.securesms.setting.SettingWithFragmentActivity;
 import org.thanthoai.securesms.utils.CacheHelper;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
@@ -139,13 +136,8 @@ public class SmsConversationActivity extends BaseProtectedActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_setting) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                Intent i = new Intent(this, SettingWithFragmentActivity.class);
-                startActivity(i);
-            } else {
-                Intent i = new Intent(this, SettingActivity.class);
-                startActivity(i);
-            }
+            Intent i = new Intent(this, SettingActivity.class);
+            startActivity(i);
             return true;
         }
 

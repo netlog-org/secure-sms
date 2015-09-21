@@ -1,4 +1,4 @@
-package org.thanthoai.securesms.setting;
+package org.thanthoai.securesms.app;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -7,12 +7,12 @@ import android.support.v7.widget.Toolbar;
 
 import org.thanthoai.securesms.R;
 
-public class SettingWithFragmentActivity extends AppCompatActivity {
+public class SettingActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setting_with_fragment);
+        setContentView(R.layout.activity_setting);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_base);
         setSupportActionBar(toolbar);

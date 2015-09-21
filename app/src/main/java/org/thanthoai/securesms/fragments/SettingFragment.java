@@ -1,4 +1,4 @@
-package org.thanthoai.securesms.setting;
+package org.thanthoai.securesms.fragments;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
