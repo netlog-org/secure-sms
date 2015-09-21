@@ -7,9 +7,9 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import org.thanthoai.securesms.BuildConfig;
 import org.thanthoai.securesms.model.SentMessageModel;
-import org.thanthoai.securesms.utils.Country;
-import org.thanthoai.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
-import org.thanthoai.securesms.utils.PhoneNumberConverterFactory;
+import org.thanthoai.securesms.utils.locale.Country;
+import org.thanthoai.securesms.utils.locale.IPhoneNumberConverter.NotValidPersonalNumberException;
+import org.thanthoai.securesms.utils.locale.PhoneNumberConverterFactory;
 
 import java.util.Locale;
 

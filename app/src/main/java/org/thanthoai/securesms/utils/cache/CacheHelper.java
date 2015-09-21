@@ -1,4 +1,4 @@
-package org.thanthoai.securesms.utils;
+package org.thanthoai.securesms.utils.cache;
 
 import java.util.Hashtable;
 

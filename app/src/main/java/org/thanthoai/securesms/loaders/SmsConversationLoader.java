@@ -8,9 +8,9 @@ import android.provider.ContactsContract;
 import org.thanthoai.securesms.model.Contact;
 import org.thanthoai.securesms.model.SentMessageModel;
 import org.thanthoai.securesms.model.SmsConversation;
-import org.thanthoai.securesms.utils.CacheHelper;
-import org.thanthoai.securesms.utils.Country;
-import org.thanthoai.securesms.utils.PhoneNumberConverterFactory;
+import org.thanthoai.securesms.utils.cache.CacheHelper;
+import org.thanthoai.securesms.utils.locale.Country;
+import org.thanthoai.securesms.utils.locale.PhoneNumberConverterFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -10,12 +10,12 @@ import android.support.v4.content.LocalBroadcastManager;
 import org.thanthoai.securesms.crypto.AESHelper;
 import org.thanthoai.securesms.model.PassphraseModel;
 import org.thanthoai.securesms.model.SentMessageModel;
-import org.thanthoai.securesms.utils.Country;
+import org.thanthoai.securesms.utils.locale.Country;
 import org.thanthoai.securesms.utils.Global;
-import org.thanthoai.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
+import org.thanthoai.securesms.utils.locale.IPhoneNumberConverter.NotValidPersonalNumberException;
 import org.thanthoai.securesms.utils.Keys;
 import org.thanthoai.securesms.utils.AppPassphraseManager;
-import org.thanthoai.securesms.utils.PhoneNumberConverterFactory;
+import org.thanthoai.securesms.utils.locale.PhoneNumberConverterFactory;
 
 import java.util.List;
 import java.util.Locale;

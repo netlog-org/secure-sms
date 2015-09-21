@@ -7,10 +7,10 @@ import android.net.Uri;
 import org.thanthoai.securesms.crypto.AESHelper;
 import org.thanthoai.securesms.model.SentMessageModel;
 import org.thanthoai.securesms.model.SmsMessage;
-import org.thanthoai.securesms.utils.Country;
+import org.thanthoai.securesms.utils.locale.Country;
 import org.thanthoai.securesms.utils.Global;
-import org.thanthoai.securesms.utils.IPhoneNumberConverter.NotValidPersonalNumberException;
-import org.thanthoai.securesms.utils.PhoneNumberConverterFactory;
+import org.thanthoai.securesms.utils.locale.IPhoneNumberConverter.NotValidPersonalNumberException;
+import org.thanthoai.securesms.utils.locale.PhoneNumberConverterFactory;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.thanthoai.securesms.utils;
+package org.thanthoai.securesms.utils.locale;
 
 import java.util.Locale;
 

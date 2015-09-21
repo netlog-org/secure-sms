@@ -11,7 +11,7 @@ import org.thanthoai.securesms.R;
 import org.thanthoai.securesms.loaders.ContactLoader;
 import org.thanthoai.securesms.model.Contact;
 import org.thanthoai.securesms.model.DatabaseHandler;
-import org.thanthoai.securesms.utils.CacheHelper;
+import org.thanthoai.securesms.utils.cache.CacheHelper;
 
 import java.util.List;
 

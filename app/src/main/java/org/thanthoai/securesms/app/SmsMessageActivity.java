@@ -48,7 +48,7 @@ import org.thanthoai.securesms.model.SentMessageModel;
 import org.thanthoai.securesms.model.SmsConversation;
 import org.thanthoai.securesms.model.SmsMessage;
 import org.thanthoai.securesms.services.DeleteMessageService;
-import org.thanthoai.securesms.utils.CacheHelper;
+import org.thanthoai.securesms.utils.cache.CacheHelper;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
 

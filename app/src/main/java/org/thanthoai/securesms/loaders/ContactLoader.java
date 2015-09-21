@@ -8,8 +8,8 @@ import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Contacts;
 
 import org.thanthoai.securesms.model.Contact;
-import org.thanthoai.securesms.utils.Country;
-import org.thanthoai.securesms.utils.PhoneNumberConverterFactory;
+import org.thanthoai.securesms.utils.locale.Country;
+import org.thanthoai.securesms.utils.locale.PhoneNumberConverterFactory;
 
 import java.util.ArrayList;
 import java.util.List;

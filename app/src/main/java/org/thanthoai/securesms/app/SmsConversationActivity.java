@@ -29,7 +29,7 @@ import org.thanthoai.securesms.crypto.AESHelper;
 import org.thanthoai.securesms.loaders.SmsConversationLoader;
 import org.thanthoai.securesms.model.PassphraseModel;
 import org.thanthoai.securesms.model.SmsConversation;
-import org.thanthoai.securesms.utils.CacheHelper;
+import org.thanthoai.securesms.utils.cache.CacheHelper;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
 
