@@ -1,5 +1,6 @@
 package org.thanthoai.securesms.crypto;
 
+import android.os.Build;
 import android.util.Base64;
 
 import org.thanthoai.securesms.utils.Global;
@@ -41,7 +42,7 @@ public class AESHelper {
             byte[] iv = new byte[cipher.getBlockSize()];
             random.nextBytes(iv);
             IvParameterSpec ivParams = new IvParameterSpec(iv);
-            final Key key = getKey(salt, password);
+            final Key key = deriveKeyPbkdf2(salt, password);
 
             cipher.init(Cipher.ENCRYPT_MODE, key, ivParams);
             byte[] cipherBytes = cipher.doFinal(plainText.getBytes("UTF-8"));
@@ -87,22 +88,6 @@ public class AESHelper {
 
     /**
      *
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
-     */
-    private static Key getKey(byte[] salt, String password) throws NoSuchAlgorithmException,
-            InvalidKeySpecException {
-
-        KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt,
-                ITERATION_COUNT, KEY_LENGTH);
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] keyBytes = keyFactory.generateSecret(keySpec).getEncoded();
-
-        return new SecretKeySpec(keyBytes, "AES");
-    }
-
-    /**
-     *
      * @throws InvalidKeySpecException
      * @throws NoSuchAlgorithmException
      */
@@ -111,8 +96,14 @@ public class AESHelper {
 
         KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt,
                 ITERATION_COUNT, KEY_LENGTH);
-        SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
-        byte[] keyBytes = keyFactory.generateSecret(keySpec).getEncoded();
+        SecretKeyFactory factory;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1And8bit");
+        } else {
+            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        }
+
+        byte[] keyBytes = factory.generateSecret(keySpec).getEncoded();
 
         return new SecretKeySpec(keyBytes, "AES");
     }
