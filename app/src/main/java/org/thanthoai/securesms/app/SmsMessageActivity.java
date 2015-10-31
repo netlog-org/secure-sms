@@ -1,7 +1,6 @@
 package org.thanthoai.securesms.app;
 
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -9,11 +8,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.provider.ContactsContract.Intents;
 import android.provider.ContactsContract.RawContacts;
@@ -24,7 +21,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.PhoneNumberUtils;
-import android.telephony.SmsManager;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -48,9 +44,10 @@ import org.thanthoai.securesms.model.SentMessageModel;
 import org.thanthoai.securesms.model.SmsConversation;
 import org.thanthoai.securesms.model.SmsMessage;
 import org.thanthoai.securesms.services.DeleteMessageService;
-import org.thanthoai.securesms.utils.cache.CacheHelper;
 import org.thanthoai.securesms.utils.Global;
 import org.thanthoai.securesms.utils.Keys;
+import org.thanthoai.securesms.utils.SmsSender;
+import org.thanthoai.securesms.utils.cache.CacheHelper;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -60,7 +57,6 @@ import java.util.List;
 public class SmsMessageActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<List<SmsMessage>> {
 
-    private static final String INTENT_SMS_SENT = "org.thanthoai.securesms.INTENT_SMS_SENT";
     private static final int UPDATE_PASSPHRASE_REQUEST_CODE = 0xaecf;
 
     private static final int MENU_COPY_ID = 123;
@@ -71,6 +67,7 @@ public class SmsMessageActivity extends AppCompatActivity
     private ProgressBar pb;
     private ListView listView;
     private TextView txtNewSms;
+
     private String mAddress;
     private String mPassphrase, mAppPassphrase;
     private int mCurrentPosLongClick = -1;
@@ -151,18 +148,17 @@ public class SmsMessageActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mSmsSentReceiver, new IntentFilter(INTENT_SMS_SENT));
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-                mDeleteMessageDoneReceiver,
+        LocalBroadcastManager.getInstance(this).registerReceiver(mSmsSentReceiver,
+                new IntentFilter(SmsSender.ACTION_SMS_SENT));
+        LocalBroadcastManager.getInstance(this).registerReceiver(mDeleteMessageDoneReceiver,
                 new IntentFilter(DeleteMessageService.DELETE_MESSAGE_DONE));
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(mSmsSentReceiver);
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(
-                mDeleteMessageDoneReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mSmsSentReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mDeleteMessageDoneReceiver);
     }
 
     @Override
@@ -408,59 +404,20 @@ public class SmsMessageActivity extends AppCompatActivity
     }
 
     private void sendSms(String msg) {
-        String cipherText = AESHelper.encryptToBase64(mPassphrase, msg);
         try {
-            if (cipherText == null)
-                throw new NullPointerException();
             if (!PhoneNumberUtils.isWellFormedSmsAddress(mAddress))
                 throw new RuntimeException("Not have well formed sms address");
 
-            cipherText = Global.AES_PREFIX + cipherText;
-            Intent i = new Intent(INTENT_SMS_SENT);
-            i.putExtra("raw", msg);
-            i.putExtra("encrypted", cipherText);
-            PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
-            SmsManager.getDefault().sendTextMessage(mAddress, null, cipherText, pi, null);
-            sendBroadcast(new Intent(INTENT_SMS_SENT));
+            String encrypted = Global.AES_PREFIX + AESHelper.encryptToBase64(mPassphrase, msg);
+            Bundle bundle = new Bundle();
+            bundle.putString("raw", msg);
+            bundle.putString("encrypted", encrypted);
+            SmsSender.getInstance().sendSms(this, bundle, mAddress, encrypted);
         } catch (Exception ex) {
             Global.error("Failed to send sms: " + ex.getMessage());
             Toast.makeText(this, R.string.send_failed, Toast.LENGTH_SHORT).show();
         }
     }
-
-    private final BroadcastReceiver mSmsSentReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String rawMsg = intent.getStringExtra("raw");
-            final String encryptedMsg = intent.getStringExtra("encrypted");
-            if (rawMsg == null || encryptedMsg == null) return;
-
-            final long currentTimeMillis = System.currentTimeMillis();
-            SmsMessage sms = new SmsMessage();
-            sms.Content = rawMsg;
-            sms.Type = SmsMessage.TYPE_SENT;
-            sms.Date = (getResultCode() == RESULT_OK)
-                    ? DateFormat.getInstance().format(new Date(currentTimeMillis))
-                    : getString(R.string.send_failed);
-            mAdapter.add(sms);
-            scrollListViewToBottom();
-
-            SharedPreferences pref = PreferenceManager
-                    .getDefaultSharedPreferences(SmsMessageActivity.this);
-            if (pref.getBoolean("save_sent_message", false)) {
-                SentMessageModel model = new SentMessageModel();
-                model.Status = (getResultCode() == RESULT_OK)
-                        ? SentMessageModel.STATUS_SENT_SUCCESS
-                        : SentMessageModel.STATUS_SENT_FAIL;
-                model.Date = String.valueOf(currentTimeMillis);
-                model.Body = encryptedMsg;
-                model.Address = mAddress;
-                if (model.insert(SmsMessageActivity.this) == -1) {
-                    Global.error("Save sent message to database failed");
-                }
-            }
-        }
-    };
 
     private final BroadcastReceiver mDeleteMessageDoneReceiver = new BroadcastReceiver() {
         @Override
@@ -471,6 +428,24 @@ public class SmsMessageActivity extends AppCompatActivity
                 return;
             }
             finish();
+        }
+    };
+
+    private final BroadcastReceiver mSmsSentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String rawMsg = intent.getBundleExtra(SmsSender.EXTRA_DATA).getString("raw");
+            final long timeSent = intent.getLongExtra(SmsSender.EXTRA_TIME_SENT, System.currentTimeMillis());
+
+            SmsMessage sms = new SmsMessage();
+            sms.Content = rawMsg;
+            sms.Type = SmsMessage.TYPE_SENT;
+            sms.Date = intent.getBooleanExtra(SmsSender.EXTRA_SUCCESS, false)
+                    ? DateFormat.getInstance().format(new Date(timeSent))
+                    : getString(R.string.send_failed);
+            mAdapter.add(sms);
+
+            scrollListViewToBottom();
         }
     };
 
