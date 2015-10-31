@@ -16,25 +16,25 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="org.thanthoai.securesms.app.SmsConversationActivity"
+            android:name=".app.SmsConversationActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop" >
         </activity>
         <activity
-            android:name="org.thanthoai.securesms.app.SmsMessageActivity"
+            android:name=".app.SmsMessageActivity"
             android:label="@string/app_name"
-            android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
+            android:parentActivityName=".app.SmsConversationActivity"
             android:windowSoftInputMode="stateHidden|adjustUnspecified"
             tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
+                android:value=".app.SmsConversationActivity" />
         </activity>
         <activity
-            android:name="org.thanthoai.securesms.app.ContactActivity"
+            android:name=".app.ContactActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/app_name"
-            android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
+            android:parentActivityName=".app.SmsConversationActivity"
             android:windowSoftInputMode="stateHidden|adjustUnspecified"
             tools:ignore="UnusedAttribute">
             <meta-data
@@ -42,10 +42,10 @@
                 android:resource="@xml/searchable" />
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
+                android:value=".app.SmsConversationActivity" />
         </activity>
         <activity
-            android:name="org.thanthoai.securesms.app.SplashScreenActivity"
+            android:name=".app.SplashScreenActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/app_name" >
             <intent-filter>
@@ -62,14 +62,14 @@
         <activity
             android:name=".app.SettingActivity"
             android:label="@string/app_name"
-            android:parentActivityName="org.thanthoai.securesms.app.SmsConversationActivity"
+            android:parentActivityName=".app.SmsConversationActivity"
             tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.thanthoai.securesms.app.SmsConversationActivity" />
+                android:value=".app.SmsConversationActivity" />
         </activity>
         <activity
-            android:name="org.thanthoai.securesms.app.AuthenticationActivity"
+            android:name=".app.AuthenticationActivity"
             android:finishOnTaskLaunch="true"
             android:label="@string/app_name"
             android:windowSoftInputMode="stateVisible|adjustResize" >
@@ -80,11 +80,11 @@
         </activity>
 
         <service
-            android:name="org.thanthoai.securesms.services.UpdatePassphraseService"
+            android:name=".services.UpdatePassphraseService"
             android:exported="false" >
         </service>
         <service
-            android:name="org.thanthoai.securesms.services.DeleteMessageService"
+            android:name=".services.DeleteMessageService"
             android:exported="false" >
         </service>
     </application>
